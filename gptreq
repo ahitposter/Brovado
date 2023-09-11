@@ -1,0 +1,108 @@
+friendtech is a crypto social platform that allows users to buy "keys" of other users.
+owning a key grants you access to a many-to-one chat with the key owner, where you can only see your own messages and the key owners messages, but the key owner can see and interact with everybodys messages
+
+Below is the api schema for friendtech:
+
+Get portfolio of owned keys:
+GET https://prod-api.kosetto.com/portfolio/{address}
+Resp:
+{
+	"holdings": [{
+		"pfpUrl": "https://d3egfmvgqzu76k.cloudfront.net/twitterPfps/0x6b57d0af4fa525378a8273e1f4fb6b5c66f763bb.jpg?Expires=1694460783&Key-Pair-Id=K11ON08J8XW8N0&Signature=SmzLISfQz3TRYL4xqaaRz7wTnhl7MUC1ORx1uIQ-XE7pog9H6Tffx9c18qcqAXX9cpxMR4O0rg853iU66Hl6e8UzX3dfv17hzfTQTNiKBZXpwOhzXzKnV5Vml61FEhyKR84-2epV2CHz-uRvNaULNVXcRDnHuhmeu-LZjfCBUgmPFuNbuz10fLyGwonQaohmQWo5d65DxwE4zcIxURqmPo5g5zQWyjv-Lj9FO1q8Ambz4FTHojzZrJbWSKTxFpKpklPN09oadEYKBiZ54V9rl5ALy46s9iwcKTGWBoJsV1SDqZqM8nXRFrqeYwzN537hddqlG5XtAJ4-II-q4ziqRQ__",
+		"username": "0xiroh_",
+		"name": "iroh",
+		"subject": "0x6b57d0af4fa525378a8273e1f4fb6b5c66f763bb",
+		"chatRoomId": "0x6b57d0af4fa525378a8273e1f4fb6b5c66f763bb",
+		"price": "52562500000000000",
+		"balance": "1",
+		"balanceEthValue": "52562500000000000",
+		"lastOnline": "1694460661160",
+		"lastMessageName": "iroh",
+		"lastMessageTime": "1694460265831",
+		"lastMessageText": "\"like a lot\"",
+		"lastRead": "1694460265838"
+	}],
+	"portfolioValueWei": "3962937500000000000",
+	"nextPageStart": 1000
+}
+
+Get messages for a specific key/chatroom:
+wss://prod-api.kosetto.com
+payload: {"action":"requestMessages","chatRoomId":{address},"pageStart":null}
+response: {
+	"type": "messages",
+	"messages": [{
+		"messageId": 3257675,
+		"sendingUserId": "0x86a52cadaf125329ec4648f31a4868e57568e759",
+		"twitterPfpUrl": "https://d3egfmvgqzu76k.cloudfront.net/twitterPfps/0x86a52cadaf125329ec4648f31a4868e57568e759.jpg?Expires=1694461017&Key-Pair-Id=K11ON08J8XW8N0&Signature=KJbg~02cIAkQvWBHA2M8kUNKoe3QJlIfOuAZyR~XULoOz4lq7loJL8akR502m7ym2H7iFSue6xky68JX32ABEYkRLFURqOoN94w6UzA2Vcop1Dpfyunkwzq11CHCZ5X~Zw3WXsVqd9qjISp6SbKTyJcSIUExSdpFnMZV750qXIuc1JulVEerQYyOQHaFbKYcYfQLTN7wi2BSFKtBkzvTYg1RbH3tVtkW6pmEAGAwanksUP4f304z0hT6qaZieds8if9XUR7L6amsOLs~HkYrZA6gLnY2SPALCJDK8PwogzqF-WRazHTLYbi5lA11yHwvSOXcwtibzyqqEfbLoIs-yg__",
+		"twitterName": "voldemort",
+		"timestamp": 1694460854760,
+		"text": "\"cmon man if u wanna make it u gotta be terminally online\"",
+		"imageUrls": [],
+		"reactions": [],
+		"replyingToMessage": {
+			"messageId": 3257642,
+			"sendingUserId": "0x83ae0681ae6b4c2193e9c1f129439b2c5cf64739",
+			"twitterPfpUrl": "https://d3egfmvgqzu76k.cloudfront.net/twitterPfps/0x83ae0681ae6b4c2193e9c1f129439b2c5cf64739.jpg?Expires=1694461017&Key-Pair-Id=K11ON08J8XW8N0&Signature=bwMMDhDL0MBsie2mprVdi8SuaIhFvscu3gwzujlxir~WyIvO~-aMAfpZoqSEKPEEmyM1U4A-Wud1lgUt-omhLNSAYa2ow4cMnueAVOLDN6sqkq-SAJo9RHEmev7g1py4h4H5P4-1X8RKamjhVjTp28Z~ulPZANliYszn91AJyqX5ZAbAJeQPZsHV54ld0XdbhmJP1riOfMjxCE0ffDejaj6yTp7YNm2V-q0gN~8SHCXAtpbdjtf7iEFz8pQ2rHEV07DC3iBeBEUFvjqwsE9l6phrkSwch3rRC~RL4u099XKO4QYiI-F3Mng3p1EWDQNVWU5XifSGNZYZ~uXH9evbvw__",
+			"twitterName": "rontgen 🩻",
+			"timestamp": 1694460836184,
+			"text": "\"i cant be up 20 hours a day on celsius \""
+		}
+	}],
+	"nextPageStart": 1694459221481
+}
+
+
+every 3 seconds the websocket also needs to send {"action":"ping"} and expect response of {"type":"pong"}
+
+if a new message is received in a chatroom, there will be the following incoming ws message:
+{"type":"receivedMessage","messageId":3257811,"sendingUserId":"0x86a52cadaf125329ec4648f31a4868e57568e759","twitterPfpUrl":"https://d3egfmvgqzu76k.cloudfront.net/twitterPfps/0x86a52cadaf125329ec4648f31a4868e57568e759.jpg?Expires=1694461087&Key-Pair-Id=K11ON08J8XW8N0&Signature=H64AuTf-37yoturfymSs7F-hPXW384IvrVsY45Gsm0TMJ56uoSFv2jWqp~eB~gmicbXCqTsr24D8NCoHSjI4lYS9ZPfUM9kprsWbnrkNaD~7ww0NIZK60t9EXMJFDq9747y27kiBWO83ozWcCh4~XJNhbCFwqhibX3x-oPK3Ji5Ng6XmCDpRcX0m3IZggTs5UzIj7wXGgWbuK3tzgDK2UgsDPagnhHZ8AgFxBfHMHKCF1IU2wY6~szRfmqUQG9DUp-mZa1qL0AcWyAoNaAiigb66la5dimREqVo0ELrG0g6~5vOEqkMwcxs2U9MBGKzhJuJEk-3lCEmkS0Mvm647rg__","twitterName":"voldemort","text":"\"who’s that?\"","timestamp":1694460967501,"chatRoomId":"0x86a52cadaf125329ec4648f31a4868e57568e759","imageUrls":[],"replyingToMessage":{"messageId":3257703,"sendingUserId":"0xde61495cbd757c767e2ed9c7f368e6943bf57956","twitterPfpUrl":"https://d3egfmvgqzu76k.cloudfront.net/twitterPfps/0xde61495cbd757c767e2ed9c7f368e6943bf57956.jpg?Expires=1694461087&Key-Pair-Id=K11ON08J8XW8N0&Signature=FbIjPcOL-slyxfAmZfuyCZEQHLoLMeU2DKaJZw2DaujByxD8cwYOLQrawmMUO9seNDuYtsvSYCqnhfab-KAlZNt8oiVNYNoTxVZKc8ylJ0rF9Vnm1zZLdLHESoaCsd6RulilUfqgvgZI4OQaOGDryx68dRgSbajAaFP2H6Ku2AlXqS1bjkteeS9uB0b27D2EG4MfvWRC6MXRg16Qjb1ta1Ag6-MaacMnuKRKnrOfqeo9s4gijhCUNdOqENWMjo~-uJye2k4wBylD-DkwrAXXdunmYS978K6Vb~ce1VvLVepkYTbqxFUmMfUF9n7oL1II~hnpFd07BmbpxWuKQWYZsA__","twitterName":"Giuseppe Lupoli","timestamp":1694460872351,"text":"\"https://debank.com/profile/0x55b1be5e9d5c2c18916cc06406629958c3bf0c2e/history?token=0x0b7f0e51cd1739d6c96982d55ad8fa634dd43a9c_DMT_eth\""}}
+
+In order to send a message to a chatroom, the following ws payload should be sent:
+{"action":"sendMessage","text":"\"test\\n\"","imagePaths":[],"chatRoomId":"0x451ac2fa74ebe84eaab451405a6957a478010256","clientMessageId":"f91fa7bd9cc"}
+and is considered successful upon the following ws message received:
+{"type":"chatMessageResponse","clientMessageId":"f91fa7bd9cc","status":"success","messageCounter":3,"message":"Ok"}
+
+and after a message is sent, we will also get another ws message of type "receivedMessage"
+
+the authorization scheme for all rest calls should be Authorization: localstorage.token
+
+The authorization scheme for the websocket should be wss://prod-api.kosetto.com?authorization=${localStorage.token}
+
+The current users ethereum address should be extracted from the localstorage token in the following way:
+the token is a JWT token which can be decoded to the following data
+{
+  "address": "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
+  "iat": 1694460524,
+  "exp": 1697052524
+}
+
+
+Please provide full instructions and code for creating a react web application to integrate with these endpoints
+
+The web application should have a single page, which shows all of the users holdings on the left side including the profile pictures, names, most recent message, time since most recent message, a green/red indicator for whether that user is currently online, the price in ether for that users keys, and the current number of keys held for that user
+On the right side should be the websocket chat for the currently selected user, allowing chatting, rendering the profile pictures, names, messages, and replies if a message is in response to another message.
+
+Please make sure to follow all the best practices and coding standards for react and web development including hooks, states, components.
+There should be properly built graceful error handling everywhere.
+
+in the holdings:
+the holdings images should render as a 46x46 circle.
+show the number of keys i hold for that user
+show the price of that users keys
+show whether that user is online in the last 3 minutes as a green/red circular indicator
+show the time since that users last message 
+render the last message sent in that users chat
+user should have the option to order the holdings either by price of keys or by time since last message
+the first listed holding should by default be the selected one, so the chatroom is always open
+there should be some highlight or other indicator shown to indicate which users chatroom is currently open
+
+In the chatroom:
+The styling for this should follow similar to imessage where messages are rendered as bubbles with my messages on the right side in blue and other peoples messages on the left side in grey
+All messages should show the profile picture, the name of the user, and the local time that message was sent
+if messages span across multiple days, there should be a horizontal delineator in the chatroom showing the change of a day
+the styling for sending a message should also be more modern with curved edges and a nice button, again following the styling designs of Apple software and products
+
+In general, the entire application should very closely follow all design and styling principles set forth by apple software, and it should all flow and feel as if the site itself was developed by apple
+
+Please provide full complete verbose code sample for this application, making sure to exactly match every single requirement laid out here, and ignoring any constraints you face that you have in terms of space limitation. there should be no abbreviations.
