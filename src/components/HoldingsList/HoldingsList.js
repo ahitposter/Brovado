@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
+import { v4 as uuidv4 } from "uuid";
 import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
 
-const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
+const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
     const [holdings, setHoldings] = useState([]);
-    const [sortOption, setSortOption] = useState("price");
+    const [sortOption, setSortOption] = useState("lastMsg");
 
     const sortedHoldings = () => {
         return holdings.sort((a, b) => {
@@ -51,6 +52,34 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
         return currentTime - lastOnline <= 180000; // 3 minutes in milliseconds
     };
 
+    const autoMilady = () => {
+        sortedHoldings().forEach((h) => {
+            const clientMessageId = uuidv4();
+            const payload = {
+                action: "sendMessage",
+                text: "AUTO MILADY!",
+                imagePaths: [],
+                chatRoomId: h.chatRoomId,
+                clientMessageId,
+            };
+            ws.send(JSON.stringify(payload));
+        });
+        setTimeout(() => {
+            axios
+                .get(
+                    `https://prod-api.kosetto.com/portfolio/${GetUserAddress()}`,
+                    {
+                        headers: {
+                            Authorization: GetToken(),
+                        },
+                    }
+                )
+                .then((res) => {
+                    setHoldings(res.data.holdings);
+                });
+        }, 1000);
+    };
+
     return (
         <div className="holdings-list">
             <div className="holdings-header">
@@ -62,6 +91,7 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
                     <option value="price">Sort by Price</option>
                     <option value="lastMsg">Sort by Last Message</option>
                 </select>
+                <button onClick={autoMilady}>Auto-Milady</button>
             </div>
             {sortedHoldings().map((holding, index) => (
                 <div

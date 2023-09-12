@@ -2,49 +2,54 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: #f2f2f2; /* Light Gray Background */
 }
 
 .loading {
     text-align: center;
     padding: 20px;
     font-size: 18px;
+    color: #8e8e93; /* Gray Text */
 }
 
 .messages {
-    padding: 10px;
+    padding: 16px;
     flex: 0.88;
     overflow-y: auto;
 }
 
 .message {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    align-items: flex-end;
 }
 
 .message.mine {
     justify-content: flex-end;
 }
 
-.message.others .message-content,
-.message.mine .message-content {
-    background-color: #ddd;
-    border-radius: 12px;
-    padding: 10px;
-    margin-left: 5px;
-    margin-right: 5px;
-    max-width: 70%;
-    word-wrap: break-word;
+.message-content {
+    max-width: 60%;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #e5e5ea; /* Gray bubble */
+}
+
+.message-content.with-image {
+    max-width: 100%; /* Increase this to allow larger images */
 }
 
 .message.mine .message-content {
-    background-color: #007bff;
-    color: white;
+    background-color: #007aff; /* Blue bubble */
+    color: #ffffff;
 }
 
 .message img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    margin-right: 8px;
+    margin-left: 8px;
 }
 
 .message-sender {
@@ -53,13 +58,14 @@
     margin-bottom: 10px;
 }
 .message-text {
-    white-space: pre-wrap;
-    font-size: medium;
+    font-size: 16px;
+    line-height: 20px;
 }
+
 .message-time {
-    font-size: small;
-    color: #999;
-    margin-top: 10px;
+    font-size: 12px;
+    color: #8e8e93; /* Gray Text */
+    margin-top: 4px;
 }
 
 .message-input.disabled {
@@ -90,45 +96,44 @@
 }
 
 .message-input {
-    flex: 0.1;
     display: flex;
-    justify-content: space-between;
-    align-items: stretch; /* changed from flex-end */
-    padding: 10px;
-    border-top: 1px solid #ccc;
+    flex: 0.1;
+    padding: 16px;
+    align-items: center;
+    border-top: 1px solid #e5e5e5; /* Light Gray Border */
 }
 
 .message-input textarea {
     flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
+    border-radius: 16px;
+    padding: 8px 12px;
+    border: 1px solid #e5e5e5; /* Light Gray Border */
+    font-size: 16px;
     resize: none;
-    overflow-y: auto;
-    margin-right: 10px;
+    margin-right: 16px;
     height: 90%;
 }
 
 .message-input button {
-    width: 80px; /* specify the width */
-    height: 50px; /* specify the height */
-    background-color: #007bff;
-    color: white;
+    width: 90px;
+    height: 36px;
+    background-color: #007aff; /* Blue background */
+    color: #ffffff;
     border: none;
-    border-radius: 12px;
+    border-radius: 18px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer; /* Add this line */
+    cursor: pointer;
 }
-
 .reply-card {
     display: flex;
     align-items: flex-start;
-    padding: 5px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    padding: 8px;
+    background-color: #f2f2f2; /* Light Gray Background */
+    border-radius: 12px;
+    margin-bottom: 8px;
 }
 
 .reply-card img {
@@ -150,4 +155,60 @@
 
 .reply-text {
     font-size: 12px;
+}
+
+.message.mine .reply-card {
+    background-color: #005ab5; /* Slightly darker blue */
+}
+
+.message.mine .reply-name,
+.message.mine .reply-text {
+    color: #ffffff; /* White text */
+}
+
+.image-card {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.image-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    cursor: pointer; /* Makes it obvious that the image is clickable */
+}
+
+.zoomed-image-container {
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 101;
+    overflow: hidden;
+}
+
+.close-icon-container {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    cursor: pointer;
+}
+
+.close-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.zoomed-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }

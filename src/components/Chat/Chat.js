@@ -9,6 +9,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     const [isLoading, setIsLoading] = useState(true);
     const messagesContainerRef = useRef(null);
     const secondLastMessageRef = useRef(null);
+    const [showZoomedImage, setShowZoomedImage] = useState(null);
 
     const isInputDisabled = () => {
         const lastThreeMessages = messages.slice(-3);
@@ -34,19 +35,24 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         return false;
     };
 
+    // Inside useEffect that handles scrolling
     useEffect(() => {
         if (isLastMessageVisible()) {
-            secondLastMessageRef.current?.scrollIntoView({
-                behavior: "smooth",
-            });
+            setTimeout(() => {
+                secondLastMessageRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+            }, 100); // 100ms delay
         }
     }, [messages]);
 
     useEffect(() => {
         if (!isLoading) {
-            secondLastMessageRef.current?.scrollIntoView({
-                behavior: "instant",
-            });
+            setTimeout(() => {
+                secondLastMessageRef.current?.scrollIntoView({
+                    behavior: "instant",
+                });
+            }, 100); // 100ms delay
         }
     }, [isLoading]);
 
@@ -117,84 +123,171 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         );
     };
 
+    const ImageCard = ({ imageUrl }) => {
+        const handleImageLoad = () => {
+            if (isLastMessageVisible()) {
+                secondLastMessageRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+            }
+        };
+
+        return (
+            <div
+                className="image-card"
+                onClick={() => setShowZoomedImage(imageUrl)}
+            >
+                <img
+                    src={imageUrl}
+                    alt="Message Attachment"
+                    onLoad={handleImageLoad}
+                />
+            </div>
+        );
+    };
+
+    const closeZoomedImage = () => {
+        setShowZoomedImage(null);
+        setTimeout(() => {
+            secondLastMessageRef.current?.scrollIntoView({
+                behavior: "instant",
+            });
+        }, 100); // 100ms delay
+    };
+
     return (
         <div className="chat-container">
             {isLoading ? (
                 <div className="loading">Loading...</div>
             ) : (
-                <div className="messages" ref={messagesContainerRef}>
-                    {messages.map((message, index) => (
+                <>
+                    {showZoomedImage ? (
                         <div
-                            key={index}
-                            ref={
-                                index === messages.length - 2
-                                    ? secondLastMessageRef
-                                    : null
-                            }
-                            className={`message ${
-                                message.sendingUserId === GetUserAddress()
-                                    ? "mine"
-                                    : "others"
-                            }`}
+                            className="zoomed-image-container"
+                            onClick={closeZoomedImage}
                         >
-                            {message.sendingUserId !== GetUserAddress() && (
+                            <div className="close-icon-container">
                                 <img
-                                    src={message.twitterPfpUrl}
-                                    alt={message.twitterName}
+                                    src={`${process.env.PUBLIC_URL}/closeIcon.svg`}
+                                    alt="Close"
+                                    className="close-icon"
+                                    onClick={closeZoomedImage}
                                 />
-                            )}
-                            <div className="message-content">
-                                <div className="message-sender">
-                                    {TrimQuotes(message.twitterName)}
-                                </div>
-                                {message.replyingToMessage && (
-                                    <ReplyCard
-                                        message={message.replyingToMessage}
-                                    />
-                                )}
-                                <div className="message-text">
-                                    {TrimQuotes(message.text)}
-                                </div>
-                                <div className="message-time">
-                                    {new Date(
-                                        message.timestamp
-                                    ).toLocaleTimeString()}
-                                </div>
                             </div>
-                            {message.sendingUserId === GetUserAddress() && (
-                                <img
-                                    src={message.twitterPfpUrl}
-                                    alt={message.twitterName}
-                                />
-                            )}
+                            <img
+                                className="zoomed-image"
+                                src={showZoomedImage}
+                                alt="Zoomed"
+                            />
                         </div>
-                    ))}
-                </div>
+                    ) : (
+                        <>
+                            <div
+                                className="messages"
+                                ref={messagesContainerRef}
+                            >
+                                {messages.map((message, index) => (
+                                    <div
+                                        key={index}
+                                        ref={
+                                            index === messages.length - 2
+                                                ? secondLastMessageRef
+                                                : null
+                                        }
+                                        className={`message ${
+                                            message.sendingUserId ===
+                                            GetUserAddress()
+                                                ? "mine"
+                                                : "others"
+                                        }`}
+                                    >
+                                        {message.sendingUserId !==
+                                            GetUserAddress() && (
+                                            <img
+                                                src={message.twitterPfpUrl}
+                                                alt={message.twitterName}
+                                            />
+                                        )}
+                                        <div
+                                            className={`message-content ${
+                                                message.imageUrls?.length
+                                                    ? "with-image"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <div className="message-sender">
+                                                {TrimQuotes(
+                                                    message.twitterName
+                                                )}
+                                            </div>
+                                            {message.replyingToMessage && (
+                                                <ReplyCard
+                                                    message={
+                                                        message.replyingToMessage
+                                                    }
+                                                />
+                                            )}
+                                            <div className="message-text">
+                                                {TrimQuotes(message.text)}
+                                            </div>
+                                            {message.imageUrls &&
+                                                message.imageUrls.map(
+                                                    (url, idx) => (
+                                                        <ImageCard
+                                                            key={idx}
+                                                            imageUrl={url}
+                                                        />
+                                                    )
+                                                )}
+                                            <div className="message-time">
+                                                {new Date(
+                                                    message.timestamp
+                                                ).toLocaleTimeString()}
+                                            </div>
+                                        </div>
+                                        {message.sendingUserId ===
+                                            GetUserAddress() && (
+                                            <img
+                                                src={message.twitterPfpUrl}
+                                                alt={message.twitterName}
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <div
+                                className={`message-input ${
+                                    isInputDisabled() ? "disabled" : ""
+                                }`}
+                            >
+                                <textarea
+                                    rows="2"
+                                    value={
+                                        isInputDisabled()
+                                            ? "You may send a maximum of 3 messages before the key owner responds"
+                                            : messageContent[
+                                                  selectedChatRoom
+                                              ] || ""
+                                    }
+                                    onChange={(e) =>
+                                        setMessageContent((prevState) => ({
+                                            ...prevState,
+                                            [selectedChatRoom]: e.target.value,
+                                        }))
+                                    }
+                                    disabled={isInputDisabled()}
+                                />
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={isInputDisabled()}
+                                >
+                                    Send
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </>
             )}
-            <div
-                className={`message-input ${
-                    isInputDisabled() ? "disabled" : ""
-                }`}
-            >
-                <textarea
-                    rows="2"
-                    value={
-                        isInputDisabled()
-                            ? "You may send a maximum of 3 messages before the key owner responds"
-                            : messageContent[selectedChatRoom] || ""
-                    }
-                    onChange={(e) =>
-                        setMessageContent((prevState) => ({
-                            ...prevState,
-                            [selectedChatRoom]: e.target.value,
-                        }))
-                    }
-                    disabled={isInputDisabled()}
-                />
-                <button onClick={sendMessage} disabled={isInputDisabled()}>
-                    Send
-                </button>
-            </div>
         </div>
     );
 };

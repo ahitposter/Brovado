@@ -48,6 +48,7 @@ function App() {
                 <HoldingsList
                     selectedChatRoom={selectedChatRoom}
                     setSelectedChatRoom={setSelectedChatRoom}
+                    ws={ws}
                 />
             </div>
             <div className="right-section">

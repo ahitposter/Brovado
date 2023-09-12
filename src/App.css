@@ -1,15 +1,12 @@
 /* Global styles */
-body,
-html {
+body, html {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial;
+    font-family: 'San Francisco', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
-    height: 100%;
-    background: rgba(1, 1, 1, 0);
+    background: #F2F2F2;  /* Light Gray Background */
 }
 
 /* Layout */
@@ -20,17 +17,16 @@ html {
 
 .left-section {
     width: 30%;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #E5E5E5;  /* Lighter Border */
 }
 
 .right-section {
     width: 70%;
 }
 
-.left-section,
-.right-section {
-    padding: 0; /* Removing padding to make sure it goes all the way to the edge */
-    margin: 0; /* Removing margin */
+.left-section, .right-section {
+    padding: 0;
+    margin: 0;
     overflow-y: auto;
 }
 

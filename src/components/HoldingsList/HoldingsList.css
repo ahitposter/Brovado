@@ -1,23 +1,17 @@
 .holdings-list {
-    width: 100%;
-    padding: 0;
-    margin: 0;
+    padding: 16px;
+    background-color: #f2f2f2; /* Light Gray Background */
 }
 
 .sort-dropdown {
-    font-family: 'San Francisco', Helvetica, Arial, sans-serif;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 12px; /* More rounded corners */
-    padding: 10px;
+    padding: 8px;
     font-size: 16px;
-    color: #333;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: none;
-    transition: border 0.3s ease-in-out; /* Smooth transition */
-    cursor: pointer; /* Add this line */
+    border-radius: 10px;
+    border: 1px solid #e5e5e5; /* Light Gray Border */
+    appearance: none; /* Removes default styling */
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
+    cursor: pointer;
 }
 
 .sort-dropdown:hover {
@@ -26,21 +20,44 @@
 
 .holdings-header {
     display: flex;
-    /* justify-content: flex-end; To move the dropdown to the right */
-    padding: 15px;
-    background-color: #f7f7f7;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #f2f2f2; /* Light Gray Background */
+    /* border-bottom: 1px solid #e5e5e5; Light Gray Border */
+}
+
+.holdings-header button {
+    padding: 8px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    background-color: #007aff; /* Blue background */
+    color: #ffffff; /* White text */
+    cursor: pointer;
+}
+
+.holdings-header button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,122,255,0.5); /* Blue Glow on Focus */
+}
+
+.holdings-header button:hover {
+    border: 1px solid #007bff;
 }
 
 .holding-item {
     display: flex;
-    align-items: center;
-    padding: 10px;
+    padding: 16px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 16px;
     cursor: pointer;
 }
-.holding-item.active {
-    background-color: #f2f2f2;
-}
 
+.holding-item.active {
+    background-color: #e5e5ea; /* Light Gray Background */
+}
 /* pfp stuff */
 .pfp {
     position: relative;
