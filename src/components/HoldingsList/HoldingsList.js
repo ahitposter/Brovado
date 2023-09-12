@@ -1,35 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
 import "./HoldingsList.css";
+import { GetToken, GetUserAddress } from "../../utils/Authentication";
 
-const HoldingsList = ({ onSelectChatRoom, selectedChatRoom }) => {
+const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
     const [holdings, setHoldings] = useState([]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found.");
-            return;
-        }
-
-        const decoded = jwt_decode(token);
-        const address = decoded.address;
-
         axios
-            .get(`https://prod-api.kosetto.com/portfolio/${address}`, {
+            .get(`https://prod-api.kosetto.com/portfolio/${GetUserAddress()}`, {
                 headers: {
-                    Authorization: token,
+                    Authorization: GetToken(),
                 },
             })
             .then((res) => {
                 setHoldings(res.data.holdings);
-                onSelectChatRoom(res.data.holdings[0]?.chatRoomId || ""); // Select the first chatroom by default
+                setSelectedChatRoom(res.data.holdings[0]?.chatRoomId || ""); // Select the first chatroom by default
             })
             .catch((err) => {
                 console.error("Error fetching holdings:", err);
             });
-    }, [onSelectChatRoom]);
+    }, [setSelectedChatRoom]);
 
     const isOnline = (lastOnline) => {
         const currentTime = Date.now();
@@ -41,22 +32,24 @@ const HoldingsList = ({ onSelectChatRoom, selectedChatRoom }) => {
             {holdings.map((holding, index) => (
                 <div
                     key={index}
-                    onClick={() => onSelectChatRoom(holding.chatRoomId)}
+                    onClick={() => setSelectedChatRoom(holding.chatRoomId)}
                     className={`holding-item ${
                         selectedChatRoom === holding.chatRoomId ? "active" : ""
                     }`}
                 >
-                    <img src={holding.pfpUrl} alt={holding.name} />
-                    <div className="info">
-                        <div className="name">{holding.name}</div>
-                        <div className="last-message">
-                            {holding.lastMessageText}
-                        </div>
+                    <div className="pfp-and-status">
+                        <img src={holding.pfpUrl} alt={holding.name} />
                         <div
                             className={`online-indicator ${
                                 isOnline(holding.lastOnline) ? "online" : ""
                             }`}
                         ></div>
+                    </div>
+                    <div className="info">
+                        <div className="name">{holding.name}</div>
+                        <div className="last-message">
+                            {holding.lastMessageText}
+                        </div>
                     </div>
                 </div>
             ))}

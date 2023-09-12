@@ -7,7 +7,9 @@ html {
         "Helvetica Neue", Arial;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow:hidden;
     height: 100%;
+    background: rgba(1, 1, 1, 0);
 }
 
 /* Layout */
