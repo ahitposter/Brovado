@@ -1,7 +1,7 @@
 .chat-container {
-    padding: 20px;
-    padding-bottom: 0;
-    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .loading {
@@ -11,8 +11,8 @@
 }
 
 .messages {
-    flex: 1;
-    max-height: 80vh;
+    padding: 10px;
+    flex: 0.88;
     overflow-y: auto;
 }
 
@@ -30,7 +30,8 @@
     background-color: #ddd;
     border-radius: 12px;
     padding: 10px;
-    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
     max-width: 70%;
     word-wrap: break-word;
 }
@@ -46,22 +47,19 @@
     border-radius: 50%;
 }
 
-.message-time {
-    font-size: 12px;
-    color: #999;
-    margin-top: 5px;
+.message-sender {
+    font-size: small;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 .message-text {
     white-space: pre-wrap;
+    font-size: medium;
 }
-
-.message-input {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-    padding-bottom: 10px;
+.message-time {
+    font-size: small;
+    color: #999;
+    margin-top: 10px;
 }
 
 .message-input.disabled {
@@ -75,26 +73,12 @@
     background-color: #ccc;
 }
 
-.message-input input {
-    width: 80%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-}
-.message-input input:disabled {
+.message-input textarea:disabled {
     width: 80%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 12px;
     background-color: #ccc;
-}
-
-.message-input button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 12px;
 }
 
 .message-input button:disabled {
@@ -103,4 +87,67 @@
     color: #ccc;
     border: none;
     border-radius: 12px;
+}
+
+.message-input {
+    flex: 0.1;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; /* changed from flex-end */
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.message-input textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    resize: none;
+    overflow-y: auto;
+    margin-right: 10px;
+    height: 90%;
+}
+
+.message-input button {
+    width: 80px; /* specify the width */
+    height: 50px; /* specify the height */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; /* Add this line */
+}
+
+.reply-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 5px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.reply-card img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.reply-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.reply-name {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.reply-text {
+    font-size: 12px;
 }

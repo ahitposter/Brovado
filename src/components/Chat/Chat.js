@@ -103,6 +103,20 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         }));
     };
 
+    const ReplyCard = ({ message }) => {
+        return (
+            <div className="reply-card">
+                <img src={message.twitterPfpUrl} alt={message.twitterName} />
+                <div className="reply-content">
+                    <span className="reply-name">{message.twitterName}</span>
+                    <span className="reply-text">
+                        {TrimQuotes(message.text)}
+                    </span>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="chat-container">
             {isLoading ? (
@@ -130,6 +144,14 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                 />
                             )}
                             <div className="message-content">
+                                <div className="message-sender">
+                                    {TrimQuotes(message.twitterName)}
+                                </div>
+                                {message.replyingToMessage && (
+                                    <ReplyCard
+                                        message={message.replyingToMessage}
+                                    />
+                                )}
                                 <div className="message-text">
                                     {TrimQuotes(message.text)}
                                 </div>
@@ -154,8 +176,8 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                     isInputDisabled() ? "disabled" : ""
                 }`}
             >
-                <input
-                    type="text"
+                <textarea
+                    rows="2"
                     value={
                         isInputDisabled()
                             ? "You may send a maximum of 3 messages before the key owner responds"

@@ -5,21 +5,15 @@ import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
 
 const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
     const [holdings, setHoldings] = useState([]);
-    const [sortOption, setSortOption] = useState("lastMsg");
+    const [sortOption, setSortOption] = useState("price");
 
-    useEffect(() => {
-        let sortedHoldings = [...holdings];
-        if (sortOption === "price") {
-            sortedHoldings.sort((a, b) => {
-                return parseFloat(b.price) - parseFloat(a.price);
-            });
-        } else if (sortOption === "lastMsg") {
-            sortedHoldings.sort((a, b) => {
-                return b.lastMessageTime - a.lastMessageTime;
-            });
-        }
-        setHoldings(sortedHoldings);
-    }, [sortOption]);
+    const sortedHoldings = () => {
+        return holdings.sort((a, b) => {
+            return sortOption === "price"
+                ? parseFloat(b.price) - parseFloat(a.price)
+                : b.lastMessageTime - a.lastMessageTime;
+        });
+    };
 
     const timeSince = (lastMessageTime) => {
         const diff = Date.now() - lastMessageTime;
@@ -69,7 +63,7 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
                     <option value="lastMsg">Sort by Last Message</option>
                 </select>
             </div>
-            {holdings.map((holding, index) => (
+            {sortedHoldings().map((holding, index) => (
                 <div
                     key={index}
                     onClick={() => setSelectedChatRoom(holding.chatRoomId)}
@@ -113,9 +107,9 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
                             holding.balanceEthValue
                         )} ETH`}</div>
                         <div className="key-info holdings">
-                            {`${holding.balance} keys, ${formatToEth(
-                                holding.price
-                            )} ETH`}
+                            {`${holding.balance} key${
+                                holding.balance > 1 ? "s" : ""
+                            }, ${formatToEth(holding.price)} ETH`}
                         </div>
                     </div>
                 </div>

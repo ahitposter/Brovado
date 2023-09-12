@@ -13,5 +13,5 @@ export const GetUserAddress = () => {
 };
 
 export const TrimQuotes = (str) => {
-    return str.replace(/^"|"$/g, "");
+    return str.replace(/^"|"$/g, "").replace(/\\n/g, '\n');
 };

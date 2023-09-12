@@ -17,6 +17,7 @@
     appearance: none;
     outline: none;
     transition: border 0.3s ease-in-out; /* Smooth transition */
+    cursor: pointer; /* Add this line */
 }
 
 .sort-dropdown:hover {
@@ -35,6 +36,9 @@
     align-items: center;
     padding: 10px;
     cursor: pointer;
+}
+.holding-item.active {
+    background-color: #f2f2f2;
 }
 
 /* pfp stuff */
