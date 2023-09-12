@@ -4,6 +4,32 @@
     margin: 0;
 }
 
+.sort-dropdown {
+    font-family: 'San Francisco', Helvetica, Arial, sans-serif;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px; /* More rounded corners */
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    transition: border 0.3s ease-in-out; /* Smooth transition */
+}
+
+.sort-dropdown:hover {
+    border: 1px solid #007bff;
+}
+
+.holdings-header {
+    display: flex;
+    /* justify-content: flex-end; To move the dropdown to the right */
+    padding: 15px;
+    background-color: #f7f7f7;
+}
+
 .holding-item {
     display: flex;
     align-items: center;
@@ -11,36 +37,20 @@
     cursor: pointer;
 }
 
-.pfp-and-status {
+/* pfp stuff */
+.pfp {
     position: relative;
+    flex: 0 0 auto;
 }
 
-.holding-item.active {
-    background-color: #f0f0f0;
-}
-
-.holding-item img {
+.pfp.image {
     width: 46px;
     height: 46px;
     border-radius: 50%;
     margin-right: 10px;
 }
 
-.info {
-    flex-grow: 1;
-}
-
-.name {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.last-message {
-    font-size: 14px;
-    color: gray;
-}
-
-.online-indicator {
+.pfp.online-indicator {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -50,6 +60,48 @@
     left: 0;
 }
 
-.online-indicator.online {
+.pfp.online-indicator.online {
     background-color: green;
+}
+
+/* user info */
+.user-info {
+    flex: 1;
+}
+.user-info.user-details {
+    display: flex;
+    align-items: center;
+}
+.user-info.user-name {
+    font-size: medium;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.user-info.last-msg-time {
+    font-size: 11px;
+    color: #868686;
+    padding-left: 1%;
+    padding-bottom: 5%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.user-info.last-message {
+    font-size: small;
+}
+
+/* key info */
+.key-info {
+    flex: 0 0 auto;
+    text-align: right;
+}
+.key-info.price {
+    font-size: medium;
+}
+.key-info.holdings {
+    font-size: 11px;
+    color: #868686;
 }

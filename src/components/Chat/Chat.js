@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import { GetUserAddress } from "../../utils/Authentication";
+import { GetUserAddress, TrimQuotes } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 
 const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
@@ -131,7 +131,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                             )}
                             <div className="message-content">
                                 <div className="message-text">
-                                    {message.text}
+                                    {TrimQuotes(message.text)}
                                 </div>
                                 <div className="message-time">
                                     {new Date(

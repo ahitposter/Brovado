@@ -1,10 +1,40 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
-import { GetToken, GetUserAddress } from "../../utils/Authentication";
+import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
 
 const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
     const [holdings, setHoldings] = useState([]);
+    const [sortOption, setSortOption] = useState("lastMsg");
+
+    useEffect(() => {
+        let sortedHoldings = [...holdings];
+        if (sortOption === "price") {
+            sortedHoldings.sort((a, b) => {
+                return parseFloat(b.price) - parseFloat(a.price);
+            });
+        } else if (sortOption === "lastMsg") {
+            sortedHoldings.sort((a, b) => {
+                return b.lastMessageTime - a.lastMessageTime;
+            });
+        }
+        setHoldings(sortedHoldings);
+    }, [sortOption]);
+
+    const timeSince = (lastMessageTime) => {
+        const diff = Date.now() - lastMessageTime;
+        const diffMinutes = Math.floor(diff / (1000 * 60));
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffDays > 0) return `${diffDays}d`;
+        if (diffHours > 0) return `${diffHours}h`;
+        return `${diffMinutes}m`;
+    };
+
+    const formatToEth = (value) => {
+        return (value / 1e18).toFixed(5);
+    };
 
     useEffect(() => {
         axios
@@ -29,6 +59,16 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
 
     return (
         <div className="holdings-list">
+            <div className="holdings-header">
+                <select
+                    value={sortOption}
+                    onChange={(e) => setSortOption(e.target.value)}
+                    className="sort-dropdown"
+                >
+                    <option value="price">Sort by Price</option>
+                    <option value="lastMsg">Sort by Last Message</option>
+                </select>
+            </div>
             {holdings.map((holding, index) => (
                 <div
                     key={index}
@@ -37,18 +77,45 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom }) => {
                         selectedChatRoom === holding.chatRoomId ? "active" : ""
                     }`}
                 >
-                    <div className="pfp-and-status">
-                        <img src={holding.pfpUrl} alt={holding.name} />
+                    <div className="pfp">
+                        <img
+                            src={holding.pfpUrl}
+                            alt={holding.name}
+                            className="pfp image"
+                        />
                         <div
-                            className={`online-indicator ${
+                            className={`pfp online-indicator ${
                                 isOnline(holding.lastOnline) ? "online" : ""
                             }`}
                         ></div>
                     </div>
-                    <div className="info">
-                        <div className="name">{holding.name}</div>
-                        <div className="last-message">
-                            {holding.lastMessageText}
+                    <div className="user-info">
+                        <div className="user-info user-details">
+                            <span className="user-info user-name">
+                                {holding.name}
+                            </span>
+                            <span className="user-info last-msg-time">{`${timeSince(
+                                holding.lastMessageTime
+                            )}`}</span>
+                        </div>
+                        <div className="user-info last-message">
+                            {`${holding.lastMessageName}: ${TrimQuotes(
+                                holding.lastMessageText
+                            ).substring(0, 50)}${
+                                holding.lastMessageText?.length > 50
+                                    ? "..."
+                                    : ""
+                            }`}
+                        </div>
+                    </div>
+                    <div className="key-info">
+                        <div className="key-info price">{`${formatToEth(
+                            holding.balanceEthValue
+                        )} ETH`}</div>
+                        <div className="key-info holdings">
+                            {`${holding.balance} keys, ${formatToEth(
+                                holding.price
+                            )} ETH`}
                         </div>
                     </div>
                 </div>

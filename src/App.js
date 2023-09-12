@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import HoldingsList from "./components/HoldingsList/HoldingsList";
 import Chat from "./components/Chat/Chat";
 import "./App.css";
-import { GetToken } from "./utils/Authentication";
+import { GetToken } from "./utils/helpers";
 
 function App() {
     const [selectedChatRoom, setSelectedChatRoom] = useState(null);

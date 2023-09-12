@@ -7,7 +7,7 @@ html {
         "Helvetica Neue", Arial;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow:hidden;
+    overflow: hidden;
     height: 100%;
     background: rgba(1, 1, 1, 0);
 }
@@ -29,9 +29,9 @@ html {
 
 .left-section,
 .right-section {
-  padding: 0;  /* Removing padding to make sure it goes all the way to the edge */
-  margin: 0;   /* Removing margin */
-  overflow-y: auto;
+    padding: 0; /* Removing padding to make sure it goes all the way to the edge */
+    margin: 0; /* Removing margin */
+    overflow-y: auto;
 }
 
 /* Utility Classes */

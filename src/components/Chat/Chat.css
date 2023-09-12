@@ -51,6 +51,9 @@
     color: #999;
     margin-top: 5px;
 }
+.message-text {
+    white-space: pre-wrap;
+}
 
 .message-input {
     display: flex;
