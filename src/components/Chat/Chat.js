@@ -10,12 +10,27 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     const messagesContainerRef = useRef(null);
     const secondLastMessageRef = useRef(null);
     const [showZoomedImage, setShowZoomedImage] = useState(null);
-    const chatAreaRef = useRef(null);
     const [replyingTo, setReplyingTo] = useState({});
     const [nextPageStart, setNextPageStart] = useState(null);
+    const [loadedImagesCount, setLoadedImagesCount] = useState(0);
+
+    const handleImageLoad = () => {
+        setLoadedImagesCount((prevCount) => prevCount + 1);
+    };
+
+    const totalImages = messages.reduce(
+        (acc, message) =>
+            acc + (message.imageUrls ? message.imageUrls.length : 0),
+        0
+    );
+
+    useEffect(() => {
+        if (loadedImagesCount === totalImages && totalImages > 0) {
+            setIsLoading(false);
+        }
+    }, [loadedImagesCount, totalImages]);
 
     const handleReply = (message) => {
-        console.log(replyingTo);
         setReplyingTo((prevState) => ({
             ...prevState,
             [selectedChatRoom]: message,
@@ -53,15 +68,12 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         return false;
     };
 
-    // useEffect(() => {
-    //     if (!isLoading) {
-    //         setTimeout(() => {
-    //             secondLastMessageRef.current?.scrollIntoView({
-    //                 behavior: "instant",
-    //             });
-    //         }, 100); // 100ms delay
-    //     }
-    // }, [isLoading]);
+    useEffect(() => {
+        if (!isLoading && messages.length <= 10) {
+            messagesContainerRef.current.scrollTop =
+                messagesContainerRef.current.scrollHeight;
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         if (messagesContainerRef.current) {
@@ -98,7 +110,9 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         if (!isWsReady) {
             return;
         }
+
         setMessages([]);
+        setLoadedImagesCount(0);
         setIsLoading(true);
         setNextPageStart(null);
 
@@ -120,7 +134,16 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                     ...prevMessages,
                 ]);
                 setNextPageStart(data.nextPageStart);
-                setIsLoading(false);
+                // only set isloading flase if there were no images to load
+                const newImages = data.messages.reduce(
+                    (acc, message) =>
+                        acc +
+                        (message.imageUrls ? message.imageUrls.length : 0),
+                    0
+                );
+                if (newImages == 0) {
+                    setIsLoading(false);
+                }
 
                 // maintain current scroll position
                 resetScrollPos();
@@ -158,8 +181,6 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         if (!currentMessage) {
             return;
         }
-
-        console.log(replyingTo);
 
         const clientMessageId = uuidv4();
         const payload = {
@@ -226,7 +247,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     };
 
     return (
-        <div className="chat-container" ref={chatAreaRef}>
+        <div className="chat-container">
             <div className="messages" ref={messagesContainerRef}>
                 {isLoading && <div className="loading">Loading...</div>}
                 {showZoomedImage && (
@@ -303,6 +324,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                             className="chat-image"
                                             src={url}
                                             alt="Message Attachment"
+                                            onLoad={handleImageLoad}
                                         />
                                     </div>
                                 ))}
@@ -344,7 +366,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                             }
                             value={
                                 isInputDisabled()
-                                    ? "You may send a maximum of 3 messages before the key owner responds"
+                                    ? "You can send up to three messages at a time. Please wait for the host to respond before sending more."
                                     : messageContent[selectedChatRoom] || ""
                             }
                             onChange={(e) =>
