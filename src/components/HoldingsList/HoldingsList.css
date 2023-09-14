@@ -39,7 +39,7 @@
 
 .holdings-header button:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(0,122,255,0.5); /* Blue Glow on Focus */
+    box-shadow: 0 0 5px rgba(0, 122, 255, 0.5); /* Blue Glow on Focus */
 }
 
 .holdings-header button:hover {
@@ -96,6 +96,7 @@
 .user-info.user-name {
     font-size: medium;
     display: flex;
+    /* font-weight: bold; TODO bold if undread */
     flex-grow: 0;
     flex-shrink: 0;
     white-space: nowrap;
@@ -112,6 +113,8 @@
 
 .user-info.last-message {
     font-size: small;
+    hyphens: auto;
+    overflow-wrap: anywhere;
 }
 
 /* key info */

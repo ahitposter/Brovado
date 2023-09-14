@@ -10,6 +10,23 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     const messagesContainerRef = useRef(null);
     const secondLastMessageRef = useRef(null);
     const [showZoomedImage, setShowZoomedImage] = useState(null);
+    const chatAreaRef = useRef(null);
+    const [replyingTo, setReplyingTo] = useState({});
+
+    const handleReply = (message) => {
+        console.log(replyingTo);
+        setReplyingTo((prevState) => ({
+            ...prevState,
+            [selectedChatRoom]: message,
+        }));
+    };
+
+    const handleCancelReply = () => {
+        setReplyingTo((prevState) => ({
+            ...prevState,
+            [selectedChatRoom]: null,
+        }));
+    };
 
     const isInputDisabled = () => {
         const lastThreeMessages = messages.slice(-3);
@@ -93,12 +110,15 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
             return;
         }
 
+        console.log(replyingTo);
+
         const clientMessageId = uuidv4();
         const payload = {
             action: "sendMessage",
             text: currentMessage,
             imagePaths: [],
             chatRoomId: selectedChatRoom,
+            replyingToMessageId: replyingTo[selectedChatRoom]?.messageId,
             clientMessageId,
         };
 
@@ -107,14 +127,47 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
             ...prevState,
             [selectedChatRoom]: "",
         }));
+        handleCancelReply();
     };
 
     const ReplyCard = ({ message }) => {
         return (
             <div className="reply-card">
-                <img src={message.twitterPfpUrl} alt={message.twitterName} />
+                <img
+                    className="reply-card-img"
+                    src={message.twitterPfpUrl}
+                    alt={message.twitterName}
+                />
                 <div className="reply-content">
                     <span className="reply-name">{message.twitterName}</span>
+                    <span className="reply-text">
+                        {TrimQuotes(message.text)}
+                    </span>
+                </div>
+            </div>
+        );
+    };
+
+    const ReplyCardWithClose = ({ message }) => {
+        return (
+            <div className="reply-card-input">
+                <img
+                    className="reply-card-img"
+                    src={message.twitterPfpUrl}
+                    alt={message.twitterName}
+                />
+                <div className="reply-content">
+                    <div className="reply-card-first-line">
+                        <span className="reply-name">
+                            {message.twitterName}
+                        </span>
+                        <button
+                            className="cancel-reply-button"
+                            onClick={handleCancelReply}
+                        >
+                            X
+                        </button>
+                    </div>
                     <span className="reply-text">
                         {TrimQuotes(message.text)}
                     </span>
@@ -138,6 +191,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                 onClick={() => setShowZoomedImage(imageUrl)}
             >
                 <img
+                    className="chat-image"
                     src={imageUrl}
                     alt="Message Attachment"
                     onLoad={handleImageLoad}
@@ -156,24 +210,16 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     };
 
     return (
-        <div className="chat-container">
+        <div className="chat-container" ref={chatAreaRef}>
             {isLoading ? (
                 <div className="loading">Loading...</div>
             ) : (
                 <>
                     {showZoomedImage ? (
                         <div
-                            className="zoomed-image-container"
+                            className="zoomed-image-overlay"
                             onClick={closeZoomedImage}
                         >
-                            <div className="close-icon-container">
-                                <img
-                                    src={`${process.env.PUBLIC_URL}/closeIcon.svg`}
-                                    alt="Close"
-                                    className="close-icon"
-                                    onClick={closeZoomedImage}
-                                />
-                            </div>
                             <img
                                 className="zoomed-image"
                                 src={showZoomedImage}
@@ -204,22 +250,36 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                         {message.sendingUserId !==
                                             GetUserAddress() && (
                                             <img
+                                                className="message-pfp"
                                                 src={message.twitterPfpUrl}
                                                 alt={message.twitterName}
                                             />
                                         )}
-                                        <div
-                                            className={`message-content ${
-                                                message.imageUrls?.length
-                                                    ? "with-image"
-                                                    : ""
-                                            }`}
-                                        >
-                                            <div className="message-sender">
-                                                {TrimQuotes(
-                                                    message.twitterName
-                                                )}
+                                        <div className="message-content">
+                                            <div className="message-sender-reply">
+                                                <span className="message-sender">
+                                                    {TrimQuotes(
+                                                        message.twitterName
+                                                    )}
+                                                </span>
+                                                {selectedChatRoom ===
+                                                    GetUserAddress() &&
+                                                    message.sendingUserId !==
+                                                        GetUserAddress() && (
+                                                        <img
+                                                            className="reply-arrow"
+                                                            src={`${process.env.PUBLIC_URL}/replyArrow.svg`}
+                                                            alt="Reply"
+                                                            onClick={() =>
+                                                                !isInputDisabled() &&
+                                                                handleReply(
+                                                                    message
+                                                                )
+                                                            }
+                                                        />
+                                                    )}
                                             </div>
+
                                             {message.replyingToMessage && (
                                                 <ReplyCard
                                                     message={
@@ -248,6 +308,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                         {message.sendingUserId ===
                                             GetUserAddress() && (
                                             <img
+                                                className="message-pfp"
                                                 src={message.twitterPfpUrl}
                                                 alt={message.twitterName}
                                             />
@@ -255,34 +316,56 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                     </div>
                                 ))}
                             </div>
-                            <div
-                                className={`message-input ${
-                                    isInputDisabled() ? "disabled" : ""
-                                }`}
-                            >
-                                <textarea
-                                    rows="2"
-                                    value={
-                                        isInputDisabled()
-                                            ? "You may send a maximum of 3 messages before the key owner responds"
-                                            : messageContent[
-                                                  selectedChatRoom
-                                              ] || ""
-                                    }
-                                    onChange={(e) =>
-                                        setMessageContent((prevState) => ({
-                                            ...prevState,
-                                            [selectedChatRoom]: e.target.value,
-                                        }))
-                                    }
-                                    disabled={isInputDisabled()}
-                                />
-                                <button
-                                    onClick={sendMessage}
-                                    disabled={isInputDisabled()}
+                            <div className="input-area">
+                                {replyingTo[selectedChatRoom] && (
+                                    <ReplyCardWithClose
+                                        message={replyingTo[selectedChatRoom]}
+                                    />
+                                )}
+                                <div
+                                    className={`message-input ${
+                                        isInputDisabled() ? "disabled" : ""
+                                    }`}
                                 >
-                                    Send
-                                </button>
+                                    <textarea
+                                        rows="2"
+                                        placeholder={
+                                            replyingTo[selectedChatRoom]
+                                                ? "Reply..."
+                                                : "Write something..."
+                                        }
+                                        value={
+                                            isInputDisabled()
+                                                ? "You may send a maximum of 3 messages before the key owner responds"
+                                                : messageContent[
+                                                      selectedChatRoom
+                                                  ] || ""
+                                        }
+                                        onChange={(e) =>
+                                            setMessageContent((prevState) => ({
+                                                ...prevState,
+                                                [selectedChatRoom]:
+                                                    e.target.value,
+                                            }))
+                                        }
+                                        disabled={isInputDisabled()}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "Enter" &&
+                                                !e.shiftKey
+                                            ) {
+                                                e.preventDefault();
+                                                sendMessage();
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        onClick={sendMessage}
+                                        disabled={isInputDisabled()}
+                                    >
+                                        Send
+                                    </button>
+                                </div>
                             </div>
                         </>
                     )}

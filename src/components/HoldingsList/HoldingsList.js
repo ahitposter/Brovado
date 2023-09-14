@@ -91,7 +91,7 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                     <option value="price">Sort by Price</option>
                     <option value="lastMsg">Sort by Last Message</option>
                 </select>
-                <button onClick={autoMilady}>Auto-Milady</button>
+                {/* <button onClick={autoMilady}>Auto-Milady</button> */}
             </div>
             {sortedHoldings().map((holding, index) => (
                 <div
@@ -122,7 +122,7 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                                 holding.lastMessageTime
                             )}`}</span>
                         </div>
-                        <div className="user-info last-message">
+                        <div className="user-info last-message" lang="de">
                             {`${holding.lastMessageName}: ${TrimQuotes(
                                 holding.lastMessageText
                             ).substring(0, 50)}${

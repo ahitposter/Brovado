@@ -3,6 +3,7 @@ import HoldingsList from "./components/HoldingsList/HoldingsList";
 import Chat from "./components/Chat/Chat";
 import "./App.css";
 import { GetToken } from "./utils/helpers";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 function App() {
     const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -16,7 +17,7 @@ function App() {
         if (!token) {
             return;
         }
-        const ws = new WebSocket(
+        const ws = new ReconnectingWebSocket(
             `wss://prod-api.kosetto.com?authorization=${token}`
         );
         setWs(ws);
@@ -33,7 +34,7 @@ function App() {
             console.error("WebSocket error:", e);
         };
         ws.onclose = () => {
-            console.log("WebSocket closed");
+            setIsWsReady(false);
         };
 
         return () => {
