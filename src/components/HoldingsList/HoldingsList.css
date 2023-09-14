@@ -96,10 +96,12 @@
 .user-info.user-name {
     font-size: medium;
     display: flex;
-    /* font-weight: bold; TODO bold if undread */
     flex-grow: 0;
     flex-shrink: 0;
     white-space: nowrap;
+}
+.user-info.user-name.unread {
+    font-weight: bold;
 }
 .user-info.last-msg-time {
     font-size: 11px;

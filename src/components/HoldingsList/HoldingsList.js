@@ -7,6 +7,7 @@ import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
 const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
     const [holdings, setHoldings] = useState([]);
     const [sortOption, setSortOption] = useState("lastMsg");
+    const [refreshInt, setRefreshInt] = useState(Date.now());
 
     const sortedHoldings = () => {
         return holdings.sort((a, b) => {
@@ -46,6 +47,13 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                 console.error("Error fetching holdings:", err);
             });
     }, [setSelectedChatRoom]);
+
+    useEffect(() => {
+        const interval = setInterval(() => setRefreshInt(Date.now()), 60000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
 
     const isOnline = (lastOnline) => {
         const currentTime = Date.now();
@@ -115,7 +123,13 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                     </div>
                     <div className="user-info">
                         <div className="user-info user-details">
-                            <span className="user-info user-name">
+                            <span
+                                className={`user-info user-name ${
+                                    holding.lastMessageTime > holding.lastRead
+                                        ? "undread"
+                                        : ""
+                                }`}
+                            >
                                 {holding.name}
                             </span>
                             <span className="user-info last-msg-time">{`${timeSince(

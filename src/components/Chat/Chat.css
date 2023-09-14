@@ -52,7 +52,9 @@
 .message-text {
     font-size: 16px;
     line-height: 20px;
-}
+    white-space: pre-line;
+    hyphens: auto;
+    overflow-wrap: anywhere;}
 
 .message-time {
     font-size: 12px;
@@ -109,8 +111,7 @@
     resize: none;
     margin-right: 16px;
     height: 90%;
-    font-family: "San Francisco", -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, "Helvetica Neue", Arial;
+    font-family: inherit;
 }
 
 .message-input button {
@@ -154,6 +155,9 @@
 
 .reply-text {
     font-size: 12px;
+    white-space: pre-line;
+    hyphens: auto;
+    overflow-wrap: anywhere;
 }
 
 .message.mine .reply-card {
