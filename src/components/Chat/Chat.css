@@ -53,8 +53,8 @@
     font-size: 16px;
     line-height: 20px;
     white-space: pre-line;
-    hyphens: auto;
-    overflow-wrap: anywhere;}
+    overflow-wrap: anywhere;
+}
 
 .message-time {
     font-size: 12px;
