@@ -4,8 +4,13 @@ import "./HoldingsList.css";
 import { v4 as uuidv4 } from "uuid";
 import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
 
-const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
-    const [holdings, setHoldings] = useState([]);
+const HoldingsList = ({
+    selectedChatRoom,
+    setSelectedChatRoom,
+    ws,
+    holdings,
+    setHoldings,
+}) => {
     const [sortOption, setSortOption] = useState("lastMsg");
     const [refreshInt, setRefreshInt] = useState(Date.now());
 
@@ -123,13 +128,7 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                     </div>
                     <div className="user-info">
                         <div className="user-info user-details">
-                            <span
-                                className={`user-info user-name ${
-                                    holding.lastMessageTime > holding.lastRead
-                                        ? "unread"
-                                        : ""
-                                }`}
-                            >
+                            <span className={`user-info user-name`}>
                                 {holding.name}
                             </span>
                             {holding.lastMessageTime ? (
@@ -139,7 +138,14 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                             ) : null}
                         </div>
                         {holding.lastMessageText ? (
-                            <div className="user-info last-message" lang="de">
+                            <div
+                                className={`user-info last-message ${
+                                    holding.lastMessageTime > holding.lastRead
+                                        ? "unread"
+                                        : ""
+                                }`}
+                                lang="de"
+                            >
                                 {`${holding.lastMessageName}: ${TrimQuotes(
                                     holding.lastMessageText
                                 )}`}

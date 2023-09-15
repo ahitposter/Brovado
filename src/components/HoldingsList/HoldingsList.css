@@ -118,7 +118,7 @@
     color: #8e8e93;
 }
 
-.user-info.user-name.unread {
+.user-info.last-message.unread {
     font-weight: bold;
 }
 

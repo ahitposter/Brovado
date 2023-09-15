@@ -3,8 +3,15 @@ import "./Chat.css";
 import { GetUserAddress, TrimQuotes } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 
-const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
-    const [messages, setMessages] = useState([]);
+const Chat = ({
+    selectedChatRoom,
+    ws,
+    isWsReady,
+    messages,
+    setMessages,
+    holdings,
+    setHoldings,
+}) => {
     const [messageContent, setMessageContent] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const messagesContainerRef = useRef(null);
@@ -119,6 +126,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                 chatRoomId: selectedChatRoom,
             })
         );
+        updateLastRead(selectedChatRoom);
 
         ws.onmessage = (e) => {
             if (e.data instanceof Blob) {
@@ -155,12 +163,42 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                         resetScrollPos();
                     }
                 }
+                updateHoldings(data);
             }
             if (data.type === "chatMessageResponse") {
                 setShowSpinner(false);
             }
         };
     }, [selectedChatRoom, isWsReady]);
+
+    const updateLastRead = (chatRoomId) => {
+        let shallow = [...holdings];
+        const idx = shallow.findIndex((n) => n.chatRoomId === chatRoomId);
+        if (idx === -1) {
+            return;
+        }
+        const holding = shallow[idx];
+        holding.lastRead = Date.now();
+        shallow[idx] = holding;
+        setHoldings(shallow);
+    };
+
+    const updateHoldings = (message) => {
+        let shallow = [...holdings];
+        const idx = shallow.findIndex(
+            (n) => n.chatRoomId === message.chatRoomId
+        );
+        if (idx === -1) {
+            return;
+        }
+        const holding = shallow[idx];
+        holding.lastMessageName = message.twitterName;
+        holding.lastMessageText = message.text;
+        holding.lastMessageTime = message.timestamp;
+
+        shallow[idx] = holding;
+        setHoldings(shallow);
+    };
 
     const resetScrollPos = () => {
         if (messagesContainerRef.current) {

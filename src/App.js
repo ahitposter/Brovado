@@ -9,6 +9,8 @@ function App() {
     const [selectedChatRoom, setSelectedChatRoom] = useState(null);
     const [ws, setWs] = useState(null);
     const [isWsReady, setIsWsReady] = useState(false);
+    const [holdings, setHoldings] = useState([]);
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         // TODO:
@@ -50,6 +52,8 @@ function App() {
                     selectedChatRoom={selectedChatRoom}
                     setSelectedChatRoom={setSelectedChatRoom}
                     ws={ws}
+                    holdings={holdings}
+                    setHoldings={setHoldings}
                 />
             </div>
             <div className="right-section">
@@ -58,6 +62,10 @@ function App() {
                         selectedChatRoom={selectedChatRoom}
                         ws={ws}
                         isWsReady={isWsReady}
+                        messages={messages}
+                        setMessages={setMessages}
+                        holdings={holdings}
+                        setHoldings={setHoldings}
                     />
                 )}
             </div>
