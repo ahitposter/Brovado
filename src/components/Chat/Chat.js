@@ -6,6 +6,7 @@ import {
     ConvertUrlsToLinks,
 } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
+import { FaImage } from "react-icons/fa";
 
 const Chat = ({
     selectedChatRoom,
@@ -25,6 +26,65 @@ const Chat = ({
     const [nextPageStart, setNextPageStart] = useState(null);
     const [loadedImagesCount, setLoadedImagesCount] = useState(0);
     const [showSpinner, setShowSpinner] = useState(false);
+    const [attachedImages, setAttachedImages] = useState({});
+    const [dragging, setDragging] = useState(false);
+
+    const handleImageUpload = (e) => {
+        const files = Array.from(e.target.files);
+        const imagePromises = files.map((file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+            });
+        });
+
+        Promise.all(imagePromises).then((images) => {
+            setAttachedImages((prev) => ({
+                ...prev,
+                [selectedChatRoom]: [
+                    ...(prev[selectedChatRoom] || []),
+                    ...images,
+                ],
+            }));
+        });
+    };
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        setDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setDragging(false);
+        handleImageUpload({ target: { files: e.dataTransfer.files } });
+    };
+
+    const handlePaste = (e) => {
+        const { items } = e.clipboardData;
+        const files = [];
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === "file") {
+                files.push(item.getAsFile());
+            }
+        }
+        handleImageUpload({ target: { files } });
+    };
+
+    const removeImage = (index) => {
+        setAttachedImages((prev) => {
+            const newImages = [...prev[selectedChatRoom]];
+            newImages.splice(index, 1);
+            return { ...prev, [selectedChatRoom]: newImages };
+        });
+    };
 
     const handleImageLoad = () => {
         setLoadedImagesCount((prevCount) => prevCount + 1);
@@ -416,17 +476,51 @@ const Chat = ({
 
             {messages.length > 0 ? (
                 <div className="input-area">
-                    {replyingTo[selectedChatRoom] && (
-                        <ReplyCardWithClose
-                            message={replyingTo[selectedChatRoom]}
-                        />
-                    )}
+                    <div className="reply-and-image-container">
+                        {replyingTo[selectedChatRoom] && (
+                            <ReplyCardWithClose
+                                message={replyingTo[selectedChatRoom]}
+                            />
+                        )}
+                        {attachedImages[selectedChatRoom]?.length ? (
+                            <div className="image-preview-container">
+                                {attachedImages[selectedChatRoom]?.map(
+                                    (image, index) => (
+                                        <div
+                                            key={index}
+                                            className="image-preview"
+                                        >
+                                            <img
+                                                src={image}
+                                                alt={`Attachment ${index}`}
+                                            />
+                                            <div
+                                                className="remove-image-icon"
+                                                onClick={() =>
+                                                    removeImage(index)
+                                                }
+                                            >
+                                                X
+                                            </div>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        ) : null}
+                    </div>
                     <div
                         className={`message-input ${
                             isInputDisabled() ? "disabled" : ""
                         }`}
                     >
                         <textarea
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onPaste={handlePaste}
+                            className={`input-textarea ${
+                                dragging ? "dragging" : ""
+                            }`}
                             rows="2"
                             placeholder={
                                 replyingTo[selectedChatRoom]
@@ -461,12 +555,34 @@ const Chat = ({
                                 //     onClick={sendMessage}
                                 //     // disabled={isInputDisabled}
                                 // />
-                                <button
-                                    onClick={sendMessage}
-                                    disabled={isInputDisabled()}
-                                >
-                                    Send
-                                </button>
+                                <div className="button-group">
+                                    <button
+                                        className="sendButton"
+                                        onClick={sendMessage}
+                                        disabled={isInputDisabled()}
+                                    >
+                                        Send
+                                    </button>
+                                    <input
+                                        type="file"
+                                        id="imageInput"
+                                        style={{ display: "none" }}
+                                        onChange={handleImageUpload}
+                                        multiple
+                                        accept="image/*"
+                                    />
+                                    <button
+                                        className="addImageButton"
+                                        disabled={isInputDisabled()}
+                                        onClick={() =>
+                                            document
+                                                .getElementById("imageInput")
+                                                .click()
+                                        }
+                                    >
+                                        {!isInputDisabled() && <FaImage />}
+                                    </button>
+                                </div>
                             ))}
                         {/* </div> */}
                     </div>

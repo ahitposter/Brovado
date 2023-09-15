@@ -106,3 +106,20 @@ the styling for sending a message should also be more modern with curved edges a
 In general, the entire application should very closely follow all design and styling principles set forth by apple software, and it should all flow and feel as if the site itself was developed by apple
 
 Please provide full complete verbose code sample for this application, making sure to exactly match every single requirement laid out here, and ignoring any constraints you face that you have in terms of space limitation. there should be no abbreviations.
+
+----------------------
+
+i am making a react webchat application for friendtech: a platform that allows you to purchase keys which grant access to chat with the keyholder.
+
+i will send you my code over the next few messages. 
+
+i will also ask you questions around implementations of different things. 
+
+whenever you are answering my questions or providing a new implementation, it is absolutely crucial to keep the following things in mind:
+1. the app should extremely strictly follow the design aesthetics of apple and imessage. the look and feel and user experience of the application is of utmost priority, and should not be compromised. whenever you are providing an implementation for something, make sure it does not mess up any of the existing styling, and make sure whatever new stuff adheres to the aesthetic principles of apple and matches with the rest of the app
+2. the app should be responsive: all units and layouts and styling should be implemented in a way that the app resizes and continues to look good on smaller/larger window sizes
+3. only do something if i tell you to do something
+4. when i make a request, be sure that you are addressing every point in my request
+5. be absolutely certain that when implementing something, it does not mess up any of the existing styling or layout of the app
+
+I will now send you my current application code over a series of messages, and then begin asking you questions. 

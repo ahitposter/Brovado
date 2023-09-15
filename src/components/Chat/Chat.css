@@ -14,10 +14,10 @@
 
 .messages {
     padding: 16px;
-    flex: 0.9;
     overflow-y: auto;
     display: flex;
     flex-direction: column-reverse;
+    flex: 4; /* Take up 80% of the space by default */
 }
 
 .message {
@@ -83,15 +83,15 @@
     background-color: #ccc;
 }
 
-.message-input textarea:disabled {
+.input-textarea:disabled {
     width: 80%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 12px;
     background-color: #ccc;
 }
-
-.message-input button:disabled {
+.addImageButton:disabled,
+.sendButton:disabled {
     padding: 10px 20px;
     background-color: #ccc;
     color: #ccc;
@@ -103,9 +103,10 @@
     display: flex;
     flex: 1;
     align-items: center;
+    min-height: 5rem;
 }
 
-.message-input textarea {
+.input-textarea {
     flex: 1;
     border-radius: 16px;
     padding: 8px 12px;
@@ -116,8 +117,11 @@
     height: 90%;
     font-family: inherit;
 }
-
-.message-input button {
+.input-textarea.dragging {
+    border: 2px solid blue;
+}
+.addImageButton,
+.sendButton {
     width: 90px;
     height: 36px;
     background-color: #007aff; /* Blue background */
@@ -248,7 +252,6 @@
 }
 
 .input-area {
-    flex: 0.1;
     padding: 16px;
     align-items: stretch;
     display: flex;
@@ -267,15 +270,13 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.cancel-reply-button {
+/* .cancel-reply-button {
     background: none;
     border: none;
     font-size: 12px;
-
-    /* padding-bottom: 5%; */
     cursor: pointer;
     color: #868686;
-}
+} */
 
 .reply-card-input {
     max-width: 60%;
@@ -286,21 +287,13 @@
     background-color: #e5e5ea; /* Light Gray Background */
     border-radius: 12px;
     margin-bottom: 16px;
+    position: relative;
+    overflow: visible;
 }
 
 .reply-card-first-line {
     display: flex;
     justify-content: space-between;
-}
-
-.reply-card-first-line button {
-    width: 12px;
-    height: 12px;
-    cursor: pointer;
-    /* padding-left: 1%; */
-    /* padding-bottom: 5%; */
-    flex-grow: 0;
-    flex-shrink: 0;
 }
 
 .send-icon,
@@ -333,4 +326,70 @@
     border-radius: 50%;
     border-top: 4px solid #007aff; /* Blue */
     animation: spin 1s linear infinite;
+}
+
+.image-preview-container {
+    display: flex;
+    flex-wrap: nowrap;
+    /* margin-bottom: 8px; */
+    overflow: hidden; /* Hide the scrollbar */
+    align-items: center;
+    padding: 8px;
+    /* background-color: #e5e5ea; Light Gray Background */
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.image-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-right: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: visible; /* Hide the overflow to prevent scrollbars */
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Maintain aspect ratio */
+    border-radius: 12px;
+}
+
+.cancel-reply-button,
+.remove-image-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    position: absolute;
+    top: -8px; /* Adjust as needed */
+    right: -8px; /* Adjust as needed */
+    width: 16px;
+    height: 16px;
+    background-color: #fff; /* White background */
+    color: black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    outline: none;
+    border: none;
+}
+.cancel-reply-button {
+    right: -5px;
+}
+
+.reply-and-image-container {
+    display: flex;
+    align-items: center;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }

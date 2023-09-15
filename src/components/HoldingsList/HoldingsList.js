@@ -157,18 +157,19 @@ const HoldingsList = ({
                             </span>
                         ) : null}
                     </div>
-                    {holding.lastMessageText ? (
-                        <div
-                            className={`user-info last-message ${
-                                isUnread(holding) ? "unread" : ""
-                            }`}
-                            lang="de"
-                        >
-                            {`${holding.lastMessageName}: ${TrimQuotes(
-                                holding.lastMessageText
-                            )}`}
-                        </div>
-                    ) : null}
+
+                    <div
+                        className={`user-info last-message ${
+                            isUnread(holding) ? "unread" : ""
+                        }`}
+                        lang="de"
+                    >
+                        {`${holding.lastMessageName}: ${
+                            holding.lastMessageText
+                                ? TrimQuotes(holding.lastMessageText)
+                                : "Sent an image"
+                        }`}
+                    </div>
                 </div>
                 <div className="key-info">
                     <div className="key-info price">{`${formatToEth(
