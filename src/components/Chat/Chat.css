@@ -52,15 +52,15 @@
 }
 
 .message-text {
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 1rem;
+    line-height: 1.25rem;
     white-space: pre-line;
     overflow-wrap: anywhere;
 }
 
 .message-time {
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
 }
 
 .message .message-content .message-time {
@@ -235,7 +235,7 @@
     flex-grow: 0;
     flex-shrink: 0;
     white-space: nowrap;
-    margin-bottom: 10px;
+    margin-bottom: 0.25rem;
 }
 .reply-arrow {
     width: 12px;

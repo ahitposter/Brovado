@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import { GetUserAddress, TrimQuotes } from "../../utils/helpers";
+import {
+    GetUserAddress,
+    TrimQuotes,
+    ConvertUrlsToLinks,
+} from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 
 const Chat = ({
@@ -78,11 +82,13 @@ const Chat = ({
 
     useEffect(() => {
         if (messagesContainerRef.current) {
+            let lastPageStart = null;
             const handleScroll = (e) => {
                 const { scrollTop, scrollHeight, clientHeight } = e.target;
                 const atTop = scrollTop <= -(scrollHeight - clientHeight) + 5;
 
-                if (atTop && nextPageStart) {
+                if (atTop && nextPageStart && nextPageStart !== lastPageStart) {
+                    lastPageStart = nextPageStart;
                     setIsLoading(true);
                     ws.send(
                         JSON.stringify({
@@ -126,6 +132,8 @@ const Chat = ({
                 chatRoomId: selectedChatRoom,
             })
         );
+
+        console.log("requesting 2");
         updateLastRead(selectedChatRoom);
 
         ws.onmessage = (e) => {
@@ -195,6 +203,9 @@ const Chat = ({
         holding.lastMessageName = message.twitterName;
         holding.lastMessageText = message.text;
         holding.lastMessageTime = message.timestamp;
+        if (message.chatRoomId === selectedChatRoom) {
+            holding.lastRead = Date.now();
+        }
 
         shallow[idx] = holding;
         setHoldings(shallow);
@@ -240,7 +251,7 @@ const Chat = ({
         setShowSpinner(true);
     };
 
-    const ReplyCard = ({ message }) => {
+    const ReplyCard = ({ message, isMyMessage }) => {
         return (
             <div className="reply-card">
                 <img
@@ -250,9 +261,15 @@ const Chat = ({
                 />
                 <div className="reply-content">
                     <span className="reply-name">{message.twitterName}</span>
-                    <span className="reply-text">
-                        {TrimQuotes(message.text)}
-                    </span>
+                    <span
+                        className="reply-text"
+                        dangerouslySetInnerHTML={{
+                            __html: ConvertUrlsToLinks(
+                                TrimQuotes(message.text),
+                                message.sendingUserId === GetUserAddress()
+                            ),
+                        }}
+                    />
                 </div>
             </div>
         );
@@ -332,11 +349,22 @@ const Chat = ({
                             {message.replyingToMessage && (
                                 <ReplyCard
                                     message={message.replyingToMessage}
+                                    isMyMessage={
+                                        message.sendingUserId ===
+                                        GetUserAddress()
+                                    }
                                 />
                             )}
-                            <div className="message-text">
-                                {TrimQuotes(message.text)}
-                            </div>
+                            <div
+                                className="message-text"
+                                dangerouslySetInnerHTML={{
+                                    __html: ConvertUrlsToLinks(
+                                        TrimQuotes(message.text),
+                                        message.sendingUserId ===
+                                            GetUserAddress()
+                                    ),
+                                }}
+                            />
                             {message.imageUrls &&
                                 message.imageUrls.map((url, idx) => (
                                     <div
