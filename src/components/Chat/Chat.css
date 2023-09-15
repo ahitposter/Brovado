@@ -16,6 +16,8 @@
     padding: 16px;
     flex: 0.9;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 .message {
@@ -157,7 +159,6 @@
 .reply-text {
     font-size: 12px;
     white-space: pre-line;
-    hyphens: auto;
     overflow-wrap: anywhere;
 }
 
@@ -300,4 +301,36 @@
     /* padding-bottom: 5%; */
     flex-grow: 0;
     flex-shrink: 0;
+}
+
+.send-icon,
+.spinner {
+    width: 40px;
+    height: 40px;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+/* Send Icon */
+.send-icon {
+    background-color: #007aff; /* Blue background */
+    mask: url("/public/send.svg") no-repeat center;
+    mask-size: cover;
+}
+
+/* Spinner */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    border: 4px solid rgba(0, 122, 255, 0.3); /* Light blue */
+    border-radius: 50%;
+    border-top: 4px solid #007aff; /* Blue */
+    animation: spin 1s linear infinite;
 }

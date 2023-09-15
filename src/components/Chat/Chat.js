@@ -13,6 +13,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     const [replyingTo, setReplyingTo] = useState({});
     const [nextPageStart, setNextPageStart] = useState(null);
     const [loadedImagesCount, setLoadedImagesCount] = useState(0);
+    const [showSpinner, setShowSpinner] = useState(false);
 
     const handleImageLoad = () => {
         setLoadedImagesCount((prevCount) => prevCount + 1);
@@ -45,7 +46,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
     };
 
     const isInputDisabled = () => {
-        const lastThreeMessages = messages.slice(-3);
+        const lastThreeMessages = messages.slice(0, 3);
         return (
             selectedChatRoom !== GetUserAddress() &&
             lastThreeMessages.every(
@@ -61,24 +62,20 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
             const containerRect =
                 messagesContainerRef.current.getBoundingClientRect();
             return (
-                messageRect.bottom <= containerRect.bottom &&
-                messageRect.top >= containerRect.top
+                messageRect.top >= containerRect.top &&
+                messageRect.bottom <= containerRect.bottom
             );
         }
         return false;
     };
 
     useEffect(() => {
-        if (!isLoading && messages.length <= 10) {
-            messagesContainerRef.current.scrollTop =
-                messagesContainerRef.current.scrollHeight;
-        }
-    }, [isLoading]);
-
-    useEffect(() => {
         if (messagesContainerRef.current) {
             const handleScroll = (e) => {
-                if (e.target.scrollTop === 0 && nextPageStart) {
+                const { scrollTop, scrollHeight, clientHeight } = e.target;
+                const atTop = scrollTop <= -(scrollHeight - clientHeight) + 5;
+
+                if (atTop && nextPageStart) {
                     setIsLoading(true);
                     ws.send(
                         JSON.stringify({
@@ -130,8 +127,8 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
             const data = JSON.parse(e.data);
             if (data.type === "messages") {
                 setMessages((prevMessages) => [
-                    ...data.messages.slice().reverse(),
                     ...prevMessages,
+                    ...data.messages.slice(),
                 ]);
                 setNextPageStart(data.nextPageStart);
                 // only set isloading flase if there were no images to load
@@ -144,21 +141,23 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                 if (newImages == 0) {
                     setIsLoading(false);
                 }
-
-                // maintain current scroll position
-                resetScrollPos();
             }
             if (data.type === "receivedMessage") {
                 if (data.chatRoomId === selectedChatRoom) {
-                    setMessages((prevMessages) => [...prevMessages, data]);
+                    setMessages((prevMessages) => [data, ...prevMessages]);
                     if (isLastMessageVisible()) {
                         setTimeout(() => {
                             secondLastMessageRef.current?.scrollIntoView({
                                 behavior: "smooth",
                             });
                         }, 0);
+                    } else {
+                        resetScrollPos();
                     }
                 }
+            }
+            if (data.type === "chatMessageResponse") {
+                setShowSpinner(false);
             }
         };
     }, [selectedChatRoom, isWsReady]);
@@ -167,11 +166,13 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
         if (messagesContainerRef.current) {
             const oldScrollTop = messagesContainerRef.current.scrollTop;
             const oldScrollHeight = messagesContainerRef.current.scrollHeight;
+
             setTimeout(() => {
                 const newScrollHeight =
                     messagesContainerRef.current.scrollHeight;
+                const heightDifference = newScrollHeight - oldScrollHeight;
                 messagesContainerRef.current.scrollTop =
-                    newScrollHeight - oldScrollHeight + oldScrollTop;
+                    oldScrollTop - heightDifference;
             }, 0);
         }
     };
@@ -198,6 +199,7 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
             [selectedChatRoom]: "",
         }));
         handleCancelReply();
+        setShowSpinner(true);
     };
 
     const ReplyCard = ({ message }) => {
@@ -248,30 +250,14 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
 
     return (
         <div className="chat-container">
+            {messages.length == 0 && isLoading && (
+                <div className="loading">Loading...</div>
+            )}
             <div className="messages" ref={messagesContainerRef}>
-                {isLoading && <div className="loading">Loading...</div>}
-                {showZoomedImage && (
-                    <div
-                        className="zoomed-image-overlay"
-                        onClick={() => {
-                            setShowZoomedImage(null);
-                        }}
-                    >
-                        <img
-                            className="zoomed-image"
-                            src={showZoomedImage}
-                            alt="Zoomed"
-                        />
-                    </div>
-                )}
                 {messages.map((message, index) => (
                     <div
                         key={index}
-                        ref={
-                            index === messages.length - 2
-                                ? secondLastMessageRef
-                                : null
-                        }
+                        ref={index === 2 ? secondLastMessageRef : null}
                         className={`message ${
                             message.sendingUserId === GetUserAddress()
                                 ? "mine"
@@ -343,6 +329,23 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                         )}
                     </div>
                 ))}
+                {showZoomedImage && (
+                    <div
+                        className="zoomed-image-overlay"
+                        onClick={() => {
+                            setShowZoomedImage(null);
+                        }}
+                    >
+                        <img
+                            className="zoomed-image"
+                            src={showZoomedImage}
+                            alt="Zoomed"
+                        />
+                    </div>
+                )}
+                {messages.length > 0 && isLoading && (
+                    <div className="loading">Loading...</div>
+                )}
             </div>
 
             {messages.length > 0 ? (
@@ -383,17 +386,26 @@ const Chat = ({ selectedChatRoom, ws, isWsReady }) => {
                                 }
                             }}
                         />
-                        <button
-                            onClick={sendMessage}
-                            disabled={isInputDisabled()}
-                        >
-                            Send
-                        </button>
+                        {!isInputDisabled() &&
+                            (showSpinner ? (
+                                <div className="spinner" />
+                            ) : (
+                                // <div
+                                //     className="send-icon"
+                                //     onClick={sendMessage}
+                                //     // disabled={isInputDisabled}
+                                // />
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={isInputDisabled()}
+                                >
+                                    Send
+                                </button>
+                            ))}
+                        {/* </div> */}
                     </div>
                 </div>
-            ) : (
-                <></>
-            )}
+            ) : null}
         </div>
     );
 };

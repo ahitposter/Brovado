@@ -126,34 +126,34 @@ const HoldingsList = ({ selectedChatRoom, setSelectedChatRoom, ws }) => {
                             <span
                                 className={`user-info user-name ${
                                     holding.lastMessageTime > holding.lastRead
-                                        ? "undread"
+                                        ? "unread"
                                         : ""
                                 }`}
                             >
                                 {holding.name}
                             </span>
-                            <span className="user-info last-msg-time">{`${timeSince(
-                                holding.lastMessageTime
-                            )}`}</span>
+                            {holding.lastMessageTime ? (
+                                <span className="user-info last-msg-time">
+                                    {timeSince(holding.lastMessageTime)}
+                                </span>
+                            ) : null}
                         </div>
-                        <div className="user-info last-message" lang="de">
-                            {`${holding.lastMessageName}: ${TrimQuotes(
-                                holding.lastMessageText
-                            ).substring(0, 50)}${
-                                holding.lastMessageText?.length > 50
-                                    ? "..."
-                                    : ""
-                            }`}
-                        </div>
+                        {holding.lastMessageText ? (
+                            <div className="user-info last-message" lang="de">
+                                {`${holding.lastMessageName}: ${TrimQuotes(
+                                    holding.lastMessageText
+                                )}`}
+                            </div>
+                        ) : null}
                     </div>
                     <div className="key-info">
                         <div className="key-info price">{`${formatToEth(
-                            holding.balanceEthValue
+                            holding.price
                         )} ETH`}</div>
                         <div className="key-info holdings">
                             {`${holding.balance} key${
                                 holding.balance > 1 ? "s" : ""
-                            }, ${formatToEth(holding.price)} ETH`}
+                            } held`}
                         </div>
                     </div>
                 </div>

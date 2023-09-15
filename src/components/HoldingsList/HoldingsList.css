@@ -1,74 +1,74 @@
+/* Apple-like Holdings List Stylesheet */
+
 .holdings-list {
-    padding: 16px;
-    background-color: #f2f2f2; /* Light Gray Background */
+    padding: 1rem;
+    background-color: #f2f2f2;
 }
 
 .sort-dropdown {
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #e5e5e5; /* Light Gray Border */
-    appearance: none; /* Removes default styling */
-    background-color: #ffffff; /* White background */
-    color: #000000; /* Black text */
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e5e5;
+    appearance: none;
+    background-color: #ffffff;
+    color: #333333;
     cursor: pointer;
 }
 
 .sort-dropdown:hover {
-    border: 1px solid #007bff;
+    border: 1px solid #007aff;
 }
 
 .holdings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px;
-    background-color: #f2f2f2; /* Light Gray Background */
-    /* border-bottom: 1px solid #e5e5e5; Light Gray Border */
+    padding: 1rem;
+    background-color: #f2f2f2;
 }
 
 .holdings-header button {
-    padding: 8px 16px;
-    font-size: 16px;
-    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
     border: none;
-    background-color: #007aff; /* Blue background */
-    color: #ffffff; /* White text */
+    background-color: #007aff;
+    color: #ffffff;
     cursor: pointer;
 }
 
 .holdings-header button:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 122, 255, 0.5); /* Blue Glow on Focus */
-}
-
-.holdings-header button:hover {
-    border: 1px solid #007bff;
+    box-shadow: 0 0 0.3rem rgba(0, 122, 255, 0.5);
 }
 
 .holding-item {
     display: flex;
-    padding: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem;
     background-color: #ffffff;
-    border-radius: 12px;
-    margin-bottom: 16px;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow, Apple style */
 }
 
 .holding-item.active {
-    background-color: #e5e5ea; /* Light Gray Background */
+    background-color: #e5e5ea;
 }
-/* pfp stuff */
+
 .pfp {
     position: relative;
     flex: 0 0 auto;
+    margin-right: 0.5rem;
 }
 
 .pfp.image {
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    margin-right: 10px;
 }
 
 .pfp.online-indicator {
@@ -79,55 +79,80 @@
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 1;
 }
 
 .pfp.online-indicator.online {
     background-color: green;
 }
 
-/* user info */
 .user-info {
     flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    /* font-size: 1rem; */
+    color: #333333;
 }
+
 .user-info.user-details {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
+
 .user-info.user-name {
-    font-size: medium;
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex: 0 1 auto;
+    font-weight: bold;
+    margin-right: 0.2rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
 }
+
+.user-info.last-msg-time {
+    font-size: 0.8em;
+    flex: 0 1 auto;
+    /* margin-left: 0.1rem; */
+    vertical-align: super;
+    color: #8e8e93;
+}
+
 .user-info.user-name.unread {
     font-weight: bold;
 }
-.user-info.last-msg-time {
-    font-size: 11px;
-    color: #868686;
-    padding-left: 1%;
-    padding-bottom: 5%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
 
 .user-info.last-message {
-    font-size: small;
-    hyphens: auto;
-    overflow-wrap: anywhere;
+    font-size: 0.9rem;
+    color: #666666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
-/* key info */
 .key-info {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    word-wrap: break-word;
     text-align: right;
+    flex-wrap: wrap;
 }
+
 .key-info.price {
-    font-size: medium;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    color: #333333;
+    width: fit-content;
+    margin-left: auto;
 }
+
 .key-info.holdings {
-    font-size: 11px;
-    color: #868686;
+    word-wrap: break-word;
+    font-size: 0.8rem;
+    color: #999999;
+    width: fit-content;
+    margin-left: auto;
 }
