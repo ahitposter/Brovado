@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
 import { v4 as uuidv4 } from "uuid";
@@ -7,6 +7,7 @@ import {
     FaSearch,
     FaSortAmountDown,
     FaStar,
+    FaSort,
     FaSortAmountUp,
 } from "react-icons/fa";
 
@@ -18,25 +19,73 @@ const HoldingsList = ({
     holdings,
     setHoldings,
 }) => {
-    const [sortOption, setSortOption] = useState("lastMsg");
-    const [favorites, setFavorites] = useState([]);
+    const [sortDirection, setSortDirection] = useState(
+        () => localStorage.getItem("sortDirection") || "desc"
+    );
+    const [sortType, setSortType] = useState(
+        () => localStorage.getItem("sortType") || "lastMessageTime"
+    );
+    const [favorites, setFavorites] = useState(() => {
+        const savedFavorites = localStorage.getItem("favorites");
+        return savedFavorites ? JSON.parse(savedFavorites) : [];
+    });
     const [showSearch, setShowSearch] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [showSortOptions, setShowSortOptions] = useState(false);
+    const sortIconRef = useRef(null);
+    const sortOptionsRef = useRef(null);
+
+    useEffect(() => {
+        localStorage.setItem("sortDirection", sortDirection);
+        localStorage.setItem("sortType", sortType);
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+    }, [sortDirection, sortType, favorites]);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                sortOptionsRef.current &&
+                !sortOptionsRef.current.contains(e.target)
+            ) {
+                setShowSortOptions(false);
+            }
+        };
+
+        if (showSortOptions) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showSortOptions]);
+
+    const toggleSortOptions = () => {
+        setShowSortOptions(!showSortOptions);
+    };
+
+    const handleSortSelection = (type) => {
+        setSortType(type);
+        setShowSortOptions(false);
+    };
 
     const toggleSearch = () => {
         setSearchTerm("");
         setShowSearch(!showSearch);
     };
 
-    const toggleSortOption = () => {
-        if (sortOption === "price") {
-            setSortOption("lastMsg");
+    const toggleSortDirection = () => {
+        if (sortDirection === "desc") {
+            setSortDirection("asc");
         } else {
-            setSortOption("price");
+            setSortDirection("desc");
         }
     };
 
-    const toggleFavorite = (chatRoomId) => {
+    const toggleFavorite = (e, chatRoomId) => {
+        e.stopPropagation();
         setFavorites((prevFavorites) => {
             if (prevFavorites.includes(chatRoomId)) {
                 return prevFavorites.filter((fav) => fav !== chatRoomId);
@@ -59,9 +108,9 @@ const HoldingsList = ({
                 return n.name.toLowerCase().includes(searchTerm.toLowerCase());
             })
             .sort((a, b) => {
-                return sortOption === "price"
-                    ? parseFloat(b.price) - parseFloat(a.price)
-                    : b.lastMessageTime - a.lastMessageTime;
+                const aVal = parseFloat(a[sortType]) || 0;
+                const bVal = parseFloat(b[sortType]) || 0;
+                return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
             });
     };
 
@@ -204,17 +253,65 @@ const HoldingsList = ({
                         </button>
                         <button
                             className="icon-button"
-                            onClick={toggleSortOption}
+                            onClick={toggleSortDirection}
                         >
-                            {sortOption === "lastMsg" ? (
+                            {sortDirection === "desc" ? (
                                 <FaSortAmountDown />
                             ) : (
                                 <FaSortAmountUp />
                             )}
                         </button>
-                        <button className="icon-button">
-                            <FaStar />
-                        </button>
+                        <div
+                            className="icon-button"
+                            ref={sortIconRef}
+                            onClick={toggleSortOptions}
+                        >
+                            <FaSort />
+                        </div>
+                        {showSortOptions && (
+                            <div
+                                className="sort-options"
+                                ref={sortOptionsRef}
+                                style={{
+                                    top:
+                                        sortIconRef.current.offsetTop +
+                                        sortIconRef.current.offsetHeight,
+                                }}
+                            >
+                                <div
+                                    onClick={() =>
+                                        handleSortSelection("lastMessageTime")
+                                    }
+                                    className={
+                                        sortType === "lastMessageTime"
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    Sort by Last Message
+                                </div>
+                                <div
+                                    onClick={() => handleSortSelection("price")}
+                                    className={
+                                        sortType === "price" ? "selected" : ""
+                                    }
+                                >
+                                    Sort by Key Price
+                                </div>
+                                <div
+                                    onClick={() =>
+                                        handleSortSelection("balanceEthValue")
+                                    }
+                                    className={
+                                        sortType === "balanceEthValue"
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    Sort by Holdings Value
+                                </div>
+                            </div>
+                        )}
                     </>
                 ) : (
                     <div className="search-bar">
@@ -252,7 +349,7 @@ const HoldingsList = ({
                 >
                     <div
                         className="favorite-icon"
-                        onClick={() => toggleFavorite(holding.chatRoomId)}
+                        onClick={(e) => toggleFavorite(e, holding.chatRoomId)}
                     >
                         {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
                     </div>
@@ -272,7 +369,7 @@ const HoldingsList = ({
                 >
                     <div
                         className="favorite-icon"
-                        onClick={() => toggleFavorite(holding.chatRoomId)}
+                        onClick={(e) => toggleFavorite(e, holding.chatRoomId)}
                     >
                         {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
                     </div>

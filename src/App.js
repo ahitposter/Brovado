@@ -9,6 +9,7 @@ import Footer from "./components/Footer/Footer";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { GetSharesHeld } from "./utils/web3";
+import ErrorBoundary from "./components/Errors/ErrorBoundary";
 
 function App() {
     const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -21,6 +22,8 @@ function App() {
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+
+    const BETA = false;
 
     useEffect(() => {
         const tokens = JSON.parse(localStorage.getItem("tokens")) || [];
@@ -45,14 +48,16 @@ function App() {
                 let data = response.data;
                 data.token = token;
                 data.expires = decoded.exp * 1000;
-                // v1: make sure they own my key
-                const keysOwned = await GetSharesHeld(
-                    "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
-                    decoded.address
-                );
-                console.log("keysOwned", keysOwned);
-                if (keysOwned == 0) {
-                    return null;
+                if (BETA) {
+                    // v1: make sure they own my key
+                    const keysOwned = await GetSharesHeld(
+                        "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
+                        decoded.address
+                    );
+                    console.log("keysOwned", keysOwned);
+                    if (keysOwned == 0) {
+                        return null;
+                    }
                 }
                 return data;
             } catch (error) {
@@ -99,15 +104,17 @@ function App() {
             data.token = newToken;
             data.expires = decoded.exp * 1000;
 
-            // v1: make sure they own my key
-            const keysOwned = await GetSharesHeld(
-                "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
-                decoded.address
-            );
-            if (keysOwned == 0) {
-                handleError("You do not have access");
-                setIsLoading(false);
-                return;
+            if (BETA) {
+                // v1: make sure they own my key
+                const keysOwned = await GetSharesHeld(
+                    "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
+                    decoded.address
+                );
+                if (keysOwned == 0) {
+                    handleError("You do not have access");
+                    setIsLoading(false);
+                    return;
+                }
             }
             setLoggedInAccount(data);
             const newAccs = accounts || [];
@@ -136,8 +143,6 @@ function App() {
     }, [accounts]);
 
     useEffect(() => {
-        // TODO:
-        // authenticate token, prompt login if necessary
         const token = loggedInAccount?.token;
         if (!token) {
             return;
@@ -193,52 +198,57 @@ function App() {
     };
 
     return (
-        <div className="app-container">
-            {showError && (
-                <ErrorBar message={errorMessage} onClose={handleCloseError} />
-            )}
-            {isLoading ? (
-                <div className="spinner-container">
-                    <div className="spinner"></div>
-                </div>
-            ) : loggedInAccount ? (
-                <>
-                    <div className="left-section">
-                        <HoldingsList
-                            loggedInAccount={loggedInAccount}
-                            selectedChatRoom={selectedChatRoom}
-                            setSelectedChatRoom={setSelectedChatRoom}
-                            ws={ws}
-                            holdings={holdings}
-                            setHoldings={setHoldings}
-                        />
-                        <Footer
-                            accounts={accounts}
-                            setAccounts={setAccounts}
-                            loggedInAccount={loggedInAccount}
-                            setLoggedInAccount={setLoggedInAccount}
-                            handleAddAccount={handleLogin}
-                        />
+        <ErrorBoundary handleError={handleError}>
+            <div className="app-container">
+                {showError && (
+                    <ErrorBar
+                        message={errorMessage}
+                        onClose={handleCloseError}
+                    />
+                )}
+                {isLoading ? (
+                    <div className="spinner-container">
+                        <div className="spinner"></div>
                     </div>
-                    <div className="right-section">
-                        {selectedChatRoom && ws && (
-                            <Chat
+                ) : loggedInAccount ? (
+                    <>
+                        <div className="left-section">
+                            <HoldingsList
                                 loggedInAccount={loggedInAccount}
                                 selectedChatRoom={selectedChatRoom}
+                                setSelectedChatRoom={setSelectedChatRoom}
                                 ws={ws}
-                                isWsReady={isWsReady}
-                                messages={messages}
-                                setMessages={setMessages}
                                 holdings={holdings}
                                 setHoldings={setHoldings}
                             />
-                        )}
-                    </div>
-                </>
-            ) : (
-                <Login onLogin={handleLogin} />
-            )}
-        </div>
+                            <Footer
+                                accounts={accounts}
+                                setAccounts={setAccounts}
+                                loggedInAccount={loggedInAccount}
+                                setLoggedInAccount={setLoggedInAccount}
+                                handleAddAccount={handleLogin}
+                            />
+                        </div>
+                        <div className="right-section">
+                            {selectedChatRoom && ws && (
+                                <Chat
+                                    loggedInAccount={loggedInAccount}
+                                    selectedChatRoom={selectedChatRoom}
+                                    ws={ws}
+                                    isWsReady={isWsReady}
+                                    messages={messages}
+                                    setMessages={setMessages}
+                                    holdings={holdings}
+                                    setHoldings={setHoldings}
+                                />
+                            )}
+                        </div>
+                    </>
+                ) : (
+                    <Login onLogin={handleLogin} />
+                )}
+            </div>
+        </ErrorBoundary>
     );
 }
 
