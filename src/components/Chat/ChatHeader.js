@@ -80,7 +80,7 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
             setIsLoading(false);
         };
         fetchData();
-    }, selectedChatRoom);
+    }, [selectedChatRoom]);
 
     return (
         <>
@@ -119,7 +119,7 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
                             <div className="middle-column">
                                 {/* Top Middle */}
                                 <div className="your-balance">
-                                    You hold {holding.balance} keys worth{" "}
+                                    You hold {holding.balance} key worth{" "}
                                     {FormatToETH(holding.balanceEthValue)} ETH
                                 </div>
                                 {/* Middle Middle */}

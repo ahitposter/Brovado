@@ -138,9 +138,10 @@ const Chat = ({
                 secondLastMessageRef.current.getBoundingClientRect();
             const containerRect =
                 messagesContainerRef.current.getBoundingClientRect();
+
             return (
-                messageRect.top >= containerRect.top &&
-                messageRect.bottom <= containerRect.bottom
+                messageRect.top <= containerRect.bottom &&
+                messageRect.bottom >= containerRect.top
             );
         }
         return false;

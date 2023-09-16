@@ -67,6 +67,16 @@ const HoldingsList = ({
             });
     };
 
+    const favoriteHoldings = sortedHoldings().filter((h) =>
+        favorites.includes(h.chatRoomId)
+    );
+    const allHoldings = sortedHoldings().filter((holding) => {
+        return (
+            holding.chatRoomId !== myKey?.chatRoomId &&
+            !favorites.includes(holding.chatRoomId)
+        );
+    });
+
     const timeSince = (lastMessageTime) => {
         const diff = Date.now() - lastMessageTime;
         const diffMinutes = Math.floor(diff / (1000 * 60));
@@ -236,55 +246,46 @@ const HoldingsList = ({
                     {holdingItemContents(myKey)}
                 </div>
             )}
-            <div className="section-title">Favorites</div>
-            {sortedHoldings()
-                .filter((h) => favorites.includes(h.chatRoomId))
-                ?.map((holding, index) => (
+            {favoriteHoldings.length ? (
+                <div className="section-title">Favorites</div>
+            ) : null}
+            {favoriteHoldings?.map((holding, index) => (
+                <div
+                    key={index}
+                    onClick={() => setSelectedChatRoom(holding.chatRoomId)}
+                    className={`holding-item ${
+                        selectedChatRoom === holding.chatRoomId ? "active" : ""
+                    }`}
+                >
                     <div
-                        key={index}
-                        onClick={() => setSelectedChatRoom(holding.chatRoomId)}
-                        className={`holding-item ${
-                            selectedChatRoom === holding.chatRoomId
-                                ? "active"
-                                : ""
-                        }`}
+                        className="favorite-icon"
+                        onClick={() => toggleFavorite(holding.chatRoomId)}
                     >
-                        <div
-                            className="favorite-icon"
-                            onClick={() => toggleFavorite(holding.chatRoomId)}
-                        >
-                            {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
-                        </div>
-                        {holdingItemContents(holding)}
+                        {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
                     </div>
-                ))}
-            <div className="section-title">All</div>
-            {sortedHoldings()
-                .filter((holding) => {
-                    return (
-                        holding.chatRoomId !== myKey?.chatRoomId &&
-                        !favorites.includes(holding.chatRoomId)
-                    );
-                })
-                .map((holding, index) => (
+                    {holdingItemContents(holding)}
+                </div>
+            ))}
+            {allHoldings.length ? (
+                <div className="section-title">All</div>
+            ) : null}
+            {allHoldings?.map((holding, index) => (
+                <div
+                    key={index}
+                    onClick={() => setSelectedChatRoom(holding.chatRoomId)}
+                    className={`holding-item ${
+                        selectedChatRoom === holding.chatRoomId ? "active" : ""
+                    }`}
+                >
                     <div
-                        key={index}
-                        onClick={() => setSelectedChatRoom(holding.chatRoomId)}
-                        className={`holding-item ${
-                            selectedChatRoom === holding.chatRoomId
-                                ? "active"
-                                : ""
-                        }`}
+                        className="favorite-icon"
+                        onClick={() => toggleFavorite(holding.chatRoomId)}
                     >
-                        <div
-                            className="favorite-icon"
-                            onClick={() => toggleFavorite(holding.chatRoomId)}
-                        >
-                            {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
-                        </div>
-                        {holdingItemContents(holding)}
+                        {favorites.includes(holding.chatRoomId) ? "★" : "☆"}
                     </div>
-                ))}
+                    {holdingItemContents(holding)}
+                </div>
+            ))}
         </div>
     );
 };
