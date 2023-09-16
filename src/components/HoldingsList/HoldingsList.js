@@ -114,15 +114,16 @@ const HoldingsList = ({
             });
     };
 
-    const favoriteHoldings = sortedHoldings().filter((h) =>
-        favorites.includes(h.chatRoomId)
+    const favoriteHoldings = sortedHoldings().filter(
+        (holding) =>
+            holding.chatRoomId !== myKey?.chatRoomId &&
+            favorites.includes(holding.chatRoomId)
     );
-    const allHoldings = sortedHoldings().filter((holding) => {
-        return (
+    const allHoldings = sortedHoldings().filter(
+        (holding) =>
             holding.chatRoomId !== myKey?.chatRoomId &&
             !favorites.includes(holding.chatRoomId)
-        );
-    });
+    );
 
     useEffect(() => {
         if (!loggedInAccount) {

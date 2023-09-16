@@ -23,7 +23,7 @@ function App() {
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
-    const BETA = false;
+    const BETA = true;
 
     useEffect(() => {
         const tokens = JSON.parse(localStorage.getItem("tokens")) || [];
@@ -54,7 +54,6 @@ function App() {
                         "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                         decoded.address
                     );
-                    console.log("keysOwned", keysOwned);
                     if (keysOwned == 0) {
                         return null;
                     }
