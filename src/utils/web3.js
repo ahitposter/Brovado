@@ -395,3 +395,21 @@ export const FT_CONTRACT = new web3.eth.Contract(
     FT_CONTRACT_ADDRESS
 );
 
+export const GetSharesHeld = async (target, holder) => {
+    const data = FT_CONTRACT.methods.sharesBalance(target, holder).encodeABI();
+
+    const jsonRpcRequest = {
+        jsonrpc: "2.0",
+        method: "eth_call",
+        params: [
+            {
+                to: FT_CONTRACT_ADDRESS,
+                data: data,
+            },
+            "latest",
+        ],
+        id: 1,
+    };
+    const response = await web3.provider.request(jsonRpcRequest);
+    return web3.utils.hexToNumber(response.result);
+};

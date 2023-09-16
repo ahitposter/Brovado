@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./ChatHeader.css";
-import { FormatToETH, GetToken, GetUserAddress } from "../../utils/helpers";
+import { FormatToETH } from "../../utils/helpers";
 import axios from "axios";
-import { FT_CONTRACT, FT_CONTRACT_ADDRESS, web3 } from "../../utils/web3";
+import {
+    FT_CONTRACT,
+    FT_CONTRACT_ADDRESS,
+    GetSharesHeld,
+    web3,
+} from "../../utils/web3";
 
-const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
+const ChatHeader = ({
+    loggedInAccount,
+    visible,
+    holding,
+    selectedChatRoom,
+}) => {
     const [ethBalance, setEthBalance] = useState(0);
     const [yourSharesHeld, setYourSharesHeld] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
@@ -26,27 +36,14 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
     };
 
     const loadSharesHeld = async () => {
-        const data = FT_CONTRACT.methods
-            .sharesBalance(GetUserAddress(), selectedChatRoom)
-            .encodeABI();
-
-        const jsonRpcRequest = {
-            jsonrpc: "2.0",
-            method: "eth_call",
-            params: [
-                {
-                    to: FT_CONTRACT_ADDRESS,
-                    data: data,
-                },
-                "latest",
-            ],
-            id: 1,
-        };
         try {
-            const response = await web3.provider.request(jsonRpcRequest);
-            setYourSharesHeld(web3.utils.hexToNumber(response.result));
+            const shares = await GetSharesHeld(
+                loggedInAccount.address,
+                selectedChatRoom
+            );
+            setYourSharesHeld(shares);
         } catch (error) {
-            console.error("Failed to fetch data:", error);
+            console.error("Failed to load held keys:", error);
         }
     };
 
@@ -56,7 +53,7 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
                 `https://prod-api.kosetto.com/users/${selectedChatRoom}`,
                 {
                     headers: {
-                        Authorization: GetToken(),
+                        Authorization: loggedInAccount.token,
                     },
                 }
             );
@@ -102,7 +99,7 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
                                 </a>
                                 {/* Middle Left */}
                                 <div className="key-price">
-                                    Key Price:{" "}
+                                    Key Price:
                                     {FormatToETH(userDetails.displayPrice)} ETH
                                 </div>
                                 {/* Bottom Left */}
@@ -119,8 +116,11 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
                             <div className="middle-column">
                                 {/* Top Middle */}
                                 <div className="your-balance">
-                                    You hold {holding.balance} key worth{" "}
-                                    {FormatToETH(holding.balanceEthValue)} ETH
+                                    {`You hold ${holding.balance} key${
+                                        holding.balance > 1 ? "s" : ""
+                                    } worth ${FormatToETH(
+                                        holding.balanceEthValue
+                                    )} ETH`}
                                 </div>
                                 {/* Middle Middle */}
                                 {yourSharesHeld ? (
@@ -139,7 +139,8 @@ const ChatHeader = ({ visible, holding, selectedChatRoom }) => {
                                 </div>
                                 {/* Middle Right */}
                                 <div className="user-keys">
-                                    This user holds {holding.balance} keys
+                                    This user holds {userDetails.holdingCount}{" "}
+                                    keys
                                 </div>
                                 {/* Bottom Right */}
                                 <div className="holders-count">

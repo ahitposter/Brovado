@@ -14,21 +14,14 @@ html {
 /* Layout */
 .app-container {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-  
-.main-content {
-    display: flex;
     flex-direction: row;
-    flex: 1;  /* take up all available space */
-    overflow: hidden;  /* clip any overflow */
+    height: 100vh;
 }
 
 .left-section,
 .right-section {
-    overflow-y: auto;  /* allow vertical scrolling */
-    height: 100%;  /* make it as tall as the parent container */
+    overflow-y: auto; /* allow vertical scrolling */
+    height: 100%; /* make it as tall as the parent container */
 }
 
 .left-section {
@@ -43,4 +36,59 @@ html {
 /* Utility Classes */
 .hidden {
     display: none;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+}
+
+.holdings-list {
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.footer {
+    flex-shrink: 0;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.spinner {
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 5px solid #007aff;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: red;
+    color: white;
+    text-align: center;
+    z-index: 1001;
+    padding: 16px;
+    font-size: 16px;
 }

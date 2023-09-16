@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
 import { v4 as uuidv4 } from "uuid";
-import {
-    FormatToETH,
-    GetToken,
-    GetUserAddress,
-    TrimQuotes,
-} from "../../utils/helpers";
+import { FormatToETH, TimeSince, TrimQuotes } from "../../utils/helpers";
 import {
     FaSearch,
     FaSortAmountDown,
@@ -16,6 +11,7 @@ import {
 } from "react-icons/fa";
 
 const HoldingsList = ({
+    loggedInAccount,
     selectedChatRoom,
     setSelectedChatRoom,
     ws,
@@ -50,7 +46,9 @@ const HoldingsList = ({
         });
     };
 
-    const myKey = holdings.find((n) => GetUserAddress() === n.chatRoomId);
+    const myKey = holdings.find(
+        (n) => loggedInAccount.address === n.chatRoomId
+    );
 
     const sortedHoldings = () => {
         return holdings
@@ -77,30 +75,25 @@ const HoldingsList = ({
         );
     });
 
-    const timeSince = (lastMessageTime) => {
-        const diff = Date.now() - lastMessageTime;
-        const diffMinutes = Math.floor(diff / (1000 * 60));
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-
-        if (diffDays > 0) return `${diffDays}d`;
-        if (diffHours > 0) return `${diffHours}h`;
-        return `${diffMinutes}m`;
-    };
-
     useEffect(() => {
+        if (!loggedInAccount) {
+            return;
+        }
         axios
-            .get(`https://prod-api.kosetto.com/portfolio/${GetUserAddress()}`, {
-                headers: {
-                    Authorization: GetToken(),
-                },
-            })
+            .get(
+                `https://prod-api.kosetto.com/portfolio/${loggedInAccount.address}`,
+                {
+                    headers: {
+                        Authorization: loggedInAccount.token,
+                    },
+                }
+            )
             .then((res) => {
                 if (res.data.holdings?.length) {
                     // select my chatroom || first chatroom by default
                     const firstKey =
                         res.data.holdings.find(
-                            (n) => GetUserAddress() === n.chatRoomId
+                            (n) => loggedInAccount.address === n.chatRoomId
                         ) || res.data.holdings[0];
                     firstKey.lastRead = Date.now();
                     setHoldings(res.data.holdings);
@@ -110,7 +103,7 @@ const HoldingsList = ({
             .catch((err) => {
                 console.error("Error fetching holdings:", err);
             });
-    }, []);
+    }, [loggedInAccount]);
 
     const isOnline = (lastOnline) => {
         const currentTime = Date.now();
@@ -136,10 +129,10 @@ const HoldingsList = ({
         setTimeout(() => {
             axios
                 .get(
-                    `https://prod-api.kosetto.com/portfolio/${GetUserAddress()}`,
+                    `https://prod-api.kosetto.com/portfolio/${loggedInAccount.address}`,
                     {
                         headers: {
-                            Authorization: GetToken(),
+                            Authorization: loggedInAccount.token,
                         },
                     }
                 )
@@ -169,7 +162,7 @@ const HoldingsList = ({
                         </span>
                         {holding.lastMessageTime ? (
                             <span className="user-info last-msg-time">
-                                {timeSince(holding.lastMessageTime)}
+                                {TimeSince(holding.lastMessageTime)}
                             </span>
                         ) : null}
                     </div>

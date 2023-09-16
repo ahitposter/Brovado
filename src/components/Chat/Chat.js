@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import {
-    GetUserAddress,
-    TrimQuotes,
-    ConvertUrlsToLinks,
-    GetToken,
-} from "../../utils/helpers";
+import { TrimQuotes, ConvertUrlsToLinks } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 import { FaImage } from "react-icons/fa";
 import axios from "axios";
 import ChatHeader from "./ChatHeader";
 
 const Chat = ({
+    loggedInAccount,
     selectedChatRoom,
     ws,
     isWsReady,
@@ -125,9 +121,9 @@ const Chat = ({
     const isInputDisabled = () => {
         const lastThreeMessages = messages.slice(0, 3);
         return (
-            selectedChatRoom !== GetUserAddress() &&
+            selectedChatRoom !== loggedInAccount.address &&
             lastThreeMessages.every(
-                (message) => message.sendingUserId === GetUserAddress()
+                (message) => message.sendingUserId === loggedInAccount.address
             )
         );
     };
@@ -305,7 +301,7 @@ const Chat = ({
                 formData,
                 {
                     headers: {
-                        Authorization: GetToken(),
+                        Authorization: loggedInAccount.token,
                         "Content-Type": "multipart/form-data",
                     },
                 }
@@ -372,7 +368,8 @@ const Chat = ({
                         dangerouslySetInnerHTML={{
                             __html: ConvertUrlsToLinks(
                                 TrimQuotes(message.text),
-                                message.sendingUserId === GetUserAddress()
+                                message.sendingUserId ===
+                                    loggedInAccount.address
                             ),
                         }}
                     />
@@ -415,6 +412,7 @@ const Chat = ({
                 <div className="loading">Loading...</div>
             )}
             <ChatHeader
+                loggedInAccount={loggedInAccount}
                 visible={messages.length > 0}
                 selectedChatRoom={selectedChatRoom}
                 holding={holdings.find(
@@ -427,12 +425,12 @@ const Chat = ({
                         key={index}
                         ref={index === 2 ? secondLastMessageRef : null}
                         className={`message ${
-                            message.sendingUserId === GetUserAddress()
+                            message.sendingUserId === loggedInAccount.address
                                 ? "mine"
                                 : "others"
                         }`}
                     >
-                        {message.sendingUserId !== GetUserAddress() && (
+                        {message.sendingUserId !== loggedInAccount.address && (
                             <img
                                 className="message-pfp"
                                 src={message.twitterPfpUrl}
@@ -444,9 +442,9 @@ const Chat = ({
                                 <span className="message-sender">
                                     {TrimQuotes(message.twitterName)}
                                 </span>
-                                {selectedChatRoom === GetUserAddress() &&
+                                {selectedChatRoom === loggedInAccount.address &&
                                     message.sendingUserId !==
-                                        GetUserAddress() && (
+                                        loggedInAccount.address && (
                                         <img
                                             className="reply-arrow"
                                             src={`${process.env.PUBLIC_URL}/replyArrow.svg`}
@@ -470,7 +468,7 @@ const Chat = ({
                                     __html: ConvertUrlsToLinks(
                                         TrimQuotes(message.text),
                                         message.sendingUserId ===
-                                            GetUserAddress()
+                                            loggedInAccount.address
                                     ),
                                 }}
                             />
@@ -495,7 +493,7 @@ const Chat = ({
                                 ).toLocaleTimeString()}
                             </div>
                         </div>
-                        {message.sendingUserId === GetUserAddress() && (
+                        {message.sendingUserId === loggedInAccount.address && (
                             <img
                                 className="message-pfp"
                                 src={message.twitterPfpUrl}

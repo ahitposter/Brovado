@@ -1,19 +1,27 @@
-import jwt_decode from "jwt-decode";
-
-export const GetToken = () => {
-    const token = sessionStorage.getItem("selectedToken");
-    return token;
-};
-
-export const GetUserAddress = () => {
-    const token = GetToken();
-    const decoded = jwt_decode(token);
-    const address = decoded.address;
-    return address;
-};
-
 export const TrimQuotes = (str) => {
     return str?.replace(/^"|"$/g, "")?.replace(/\\n/g, "\n");
+};
+
+export const TimeSince = (time) => {
+    const diff = Date.now() - time;
+    const diffMinutes = Math.floor(diff / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) return `${diffDays}d`;
+    if (diffHours > 0) return `${diffHours}h`;
+    return `${diffMinutes}m`;
+};
+
+export const TimeUntil = (time) => {
+    const diff = time - Date.now();
+    const diffMinutes = Math.floor(diff / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) return `${diffDays}d`;
+    if (diffHours > 0) return `${diffHours}h`;
+    return `${diffMinutes}m`;
 };
 
 export const EscapeHtml = (unsafe) => {
