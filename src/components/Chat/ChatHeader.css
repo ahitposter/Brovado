@@ -1,0 +1,63 @@
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    font-family: "San Francisco", Helvetica, Arial, sans-serif;
+}
+
+.left-column,
+.middle-column,
+.right-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.twitter-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007aff;
+    text-decoration: none;
+}
+
+.key-price,
+.eth-link,
+.your-balance,
+.your-shares,
+.shares-supply,
+.user-keys,
+.holders-count {
+    font-size: 14px;
+    color: #333333;
+}
+
+.key-price,
+.eth-link {
+    margin-top: 4px;
+}
+
+.eth-link {
+    color: #007aff;
+    text-decoration: none;
+}
+
+.your-balance,
+.your-shares,
+.shares-supply,
+.user-keys,
+.holders-count {
+    margin-top: 4px;
+}
+
+.middle-column {
+    align-items: center;
+}
+
+.right-column {
+    align-items: flex-end;
+}

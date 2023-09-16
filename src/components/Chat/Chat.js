@@ -4,9 +4,12 @@ import {
     GetUserAddress,
     TrimQuotes,
     ConvertUrlsToLinks,
+    GetToken,
 } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 import { FaImage } from "react-icons/fa";
+import axios from "axios";
+import ChatHeader from "./ChatHeader";
 
 const Chat = ({
     selectedChatRoom,
@@ -29,8 +32,11 @@ const Chat = ({
     const [attachedImages, setAttachedImages] = useState({});
     const [dragging, setDragging] = useState(false);
 
+    const isImageFile = (file) => {
+        return file?.type?.split("/")?.[0] === "image";
+    };
     const handleImageUpload = (e) => {
-        const files = Array.from(e.target.files);
+        const files = Array.from(e.target.files).filter((f) => isImageFile(f));
         const imagePromises = files.map((file) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -56,7 +62,7 @@ const Chat = ({
         setDragging(true);
     };
 
-    const handleDragLeave = () => {
+    const handleDragLeave = (e) => {
         setDragging(false);
     };
 
@@ -193,7 +199,6 @@ const Chat = ({
             })
         );
 
-        console.log("requesting 2");
         updateLastRead(selectedChatRoom);
 
         ws.onmessage = (e) => {
@@ -286,9 +291,45 @@ const Chat = ({
         }
     };
 
-    const sendMessage = () => {
+    const uploadImage = async (imageFile) => {
+        const response = await fetch(imageFile);
+        const blob = await response.blob();
+
+        const formData = new FormData();
+        formData.append("image", blob, "image.png");
+
+        try {
+            const response = await axios.post(
+                "http://localhost:8081/api/v1/image-upload",
+                formData,
+                {
+                    headers: {
+                        Authorization: GetToken(),
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            return response.data.path;
+        } catch (error) {
+            console.error("Image upload failed:", error);
+            return null;
+        }
+    };
+
+    const sendMessage = async () => {
         const currentMessage = messageContent[selectedChatRoom] || "";
-        if (!currentMessage) {
+        const currentImages = attachedImages[selectedChatRoom] || [];
+        if (!currentMessage && !currentImages.length) {
+            return;
+        }
+
+        setShowSpinner(true);
+
+        const imagePaths = await Promise.all(currentImages.map(uploadImage));
+        if (imagePaths.some((path) => path === null)) {
+            // todo toast
+            console.error("Failed to upload one or more images.");
+            setShowSpinner(false);
             return;
         }
 
@@ -296,22 +337,26 @@ const Chat = ({
         const payload = {
             action: "sendMessage",
             text: currentMessage,
-            imagePaths: [],
+            imagePaths,
             chatRoomId: selectedChatRoom,
             replyingToMessageId: replyingTo[selectedChatRoom]?.messageId,
             clientMessageId,
         };
 
         ws.send(JSON.stringify(payload));
+
         setMessageContent((prevState) => ({
             ...prevState,
             [selectedChatRoom]: "",
         }));
+        setAttachedImages((prevState) => ({
+            ...prevState,
+            [selectedChatRoom]: [],
+        }));
         handleCancelReply();
-        setShowSpinner(true);
     };
 
-    const ReplyCard = ({ message, isMyMessage }) => {
+    const ReplyCard = ({ message }) => {
         return (
             <div className="reply-card">
                 <img
@@ -368,6 +413,13 @@ const Chat = ({
             {messages.length == 0 && isLoading && (
                 <div className="loading">Loading...</div>
             )}
+            <ChatHeader
+                visible={messages.length > 0}
+                selectedChatRoom={selectedChatRoom}
+                holding={holdings.find(
+                    (n) => n.chatRoomId === selectedChatRoom
+                )}
+            />
             <div className="messages" ref={messagesContainerRef}>
                 {messages.map((message, index) => (
                     <div
@@ -409,10 +461,6 @@ const Chat = ({
                             {message.replyingToMessage && (
                                 <ReplyCard
                                     message={message.replyingToMessage}
-                                    isMyMessage={
-                                        message.sendingUserId ===
-                                        GetUserAddress()
-                                    }
                                 />
                             )}
                             <div
@@ -519,7 +567,7 @@ const Chat = ({
                             onDrop={handleDrop}
                             onPaste={handlePaste}
                             className={`input-textarea ${
-                                dragging ? "dragging" : ""
+                                !isInputDisabled() && dragging ? "dragging" : ""
                             }`}
                             rows="2"
                             placeholder={
@@ -584,7 +632,6 @@ const Chat = ({
                                     </button>
                                 </div>
                             ))}
-                        {/* </div> */}
                     </div>
                 </div>
             ) : null}

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
 import { v4 as uuidv4 } from "uuid";
-import { GetToken, GetUserAddress, TrimQuotes } from "../../utils/helpers";
+import {
+    FormatToETH,
+    GetToken,
+    GetUserAddress,
+    TrimQuotes,
+} from "../../utils/helpers";
 import {
     FaSearch,
     FaSortAmountDown,
@@ -73,10 +78,6 @@ const HoldingsList = ({
         return `${diffMinutes}m`;
     };
 
-    const formatToEth = (value) => {
-        return (value / 1e18).toFixed(5);
-    };
-
     useEffect(() => {
         axios
             .get(`https://prod-api.kosetto.com/portfolio/${GetUserAddress()}`, {
@@ -86,9 +87,14 @@ const HoldingsList = ({
             })
             .then((res) => {
                 if (res.data.holdings?.length) {
-                    res.data.holdings[0].lastRead = Date.now();
+                    // select my chatroom || first chatroom by default
+                    const firstKey =
+                        res.data.holdings.find(
+                            (n) => GetUserAddress() === n.chatRoomId
+                        ) || res.data.holdings[0];
+                    firstKey.lastRead = Date.now();
                     setHoldings(res.data.holdings);
-                    setSelectedChatRoom(res.data.holdings[0]?.chatRoomId || ""); // Select the first chatroom by default
+                    setSelectedChatRoom(firstKey.chatRoomId || ""); // Select the first chatroom by default
                 }
             })
             .catch((err) => {
@@ -172,7 +178,7 @@ const HoldingsList = ({
                     </div>
                 </div>
                 <div className="key-info">
-                    <div className="key-info price">{`${formatToEth(
+                    <div className="key-info price">{`${FormatToETH(
                         holding.price
                     )} ETH`}</div>
                     <div className="key-info holdings">

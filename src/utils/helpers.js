@@ -35,3 +35,7 @@ export const ConvertUrlsToLinks = (text, isMyMessage) => {
         return `<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; ${linkColor}">${escapedUrl}</a>`;
     });
 };
+
+export const FormatToETH = (value) => {
+    return (value / 1e18).toFixed(5);
+};
