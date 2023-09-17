@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from "react";
+// ErrorBoundary.js
+import React, { Component } from "react";
 
-const ErrorBoundary = ({ children, handleError }) => {
-    const [hasError, setHasError] = useState(false);
+class ErrorBoundary extends Component {
+    state = { hasError: false };
 
-    useEffect(() => {
-        if (hasError) {
-            // Log the error to your logging service
-            console.error("An error occurred in the component tree.");
-
-            // Display "Something went wrong" in the App's error-bar
-            handleError("Something went wrong");
-        }
-    }, [hasError, handleError]);
-
-    const componentDidCatch = (error, info) => {
-        setHasError(true);
-    };
-
-    if (React.Children.count(children) === 0) {
-        return null;
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
     }
 
-    return React.cloneElement(React.Children.only(children), {
-        componentDidCatch,
-    });
-};
+    componentDidCatch(error, info) {
+        console.error("Caught error: ", error, info);
+        if (this.props.handleError) {
+            this.props.handleError("Something went wrong");
+        }
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return null; // You can also return a fallback UI
+        }
+        return this.props.children;
+    }
+}
 
 export default ErrorBoundary;

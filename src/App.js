@@ -69,12 +69,10 @@ function App() {
                     .map((obj) => obj.value)
                     ?.filter((n) => n != null);
 
-                const oneUserHasKey = users.some((n) => n.keysOwned > 0);
-                let selectedUser
+                const oneUserHasKey = users?.some((n) => n.keysOwned > 0);
+                let selectedUser;
                 if ((BETA && oneUserHasKey) || !BETA) {
-                    selectedUser = users.find(
-                        (n) => n.token === selectedToken
-                    );
+                    selectedUser = users.find((n) => n.token === selectedToken);
                 }
                 if (selectedUser) {
                     setLoggedInAccount(selectedUser);
@@ -114,7 +112,9 @@ function App() {
                     "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                     decoded.address
                 );
-                if (keysOwned == 0) {
+                data.keysOwned = keysOwned;
+                const oneUserHasKey = newAccs?.some((n) => n.keysOwned > 0);
+                if (keysOwned == 0 && !oneUserHasKey) {
                     handleError("You do not have access");
                     setIsLoading(false);
                     return;
