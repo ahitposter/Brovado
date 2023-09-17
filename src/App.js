@@ -54,9 +54,7 @@ function App() {
                         "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                         decoded.address
                     );
-                    if (keysOwned == 0) {
-                        return null;
-                    }
+                    data.keysOwned = keysOwned;
                 }
                 return data;
             } catch (error) {
@@ -70,9 +68,14 @@ function App() {
                 const users = results
                     .map((obj) => obj.value)
                     ?.filter((n) => n != null);
-                const selectedUser = users.find(
-                    (n) => n.token === selectedToken
-                );
+
+                const oneUserHasKey = users.some((n) => n.keysOwned > 0);
+                let selectedUser
+                if ((BETA && oneUserHasKey) || !BETA) {
+                    selectedUser = users.find(
+                        (n) => n.token === selectedToken
+                    );
+                }
                 if (selectedUser) {
                     setLoggedInAccount(selectedUser);
                     setAccounts(users);
@@ -106,7 +109,7 @@ function App() {
             const newAccs = accounts || [];
             // v1: make sure they own my key
             // if they already have another account that has logged in then allow it
-            if (BETA && accounts?.length === 0) {
+            if (BETA) {
                 const keysOwned = await GetSharesHeld(
                     "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                     decoded.address
