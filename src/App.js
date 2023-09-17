@@ -106,7 +106,7 @@ function App() {
             const newAccs = accounts || [];
             // v1: make sure they own my key
             // if they already have another account that has logged in then allow it
-            if (BETA && accounts.length === 0) {
+            if (BETA && accounts?.length === 0) {
                 const keysOwned = await GetSharesHeld(
                     "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                     decoded.address
