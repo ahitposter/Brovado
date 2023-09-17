@@ -490,7 +490,8 @@ const Chat = ({
                             <div className="message-time">
                                 {new Date(
                                     message.timestamp
-                                ).toLocaleTimeString()}
+                                ).toLocaleTimeString()}{" "}
+                                - 👀 {message.readByCount}
                             </div>
                         </div>
                         {message.sendingUserId === loggedInAccount.address && (
