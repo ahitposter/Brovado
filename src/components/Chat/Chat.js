@@ -491,7 +491,7 @@ const Chat = ({
                                 {new Date(
                                     message.timestamp
                                 ).toLocaleTimeString()}{" "}
-                                - 👀 {message.readByCount}
+                                - 👀 {message.readByCount || 0}
                             </div>
                         </div>
                         {message.sendingUserId === loggedInAccount.address && (
