@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import HoldingsList from "./components/HoldingsList/HoldingsList";
 import Chat from "./components/Chat/Chat";
 import "./App.css";
-import { GetToken as GetCurrentToken } from "./utils/helpers";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import Login from "./components/Login/Login";
 import Footer from "./components/Footer/Footer";
