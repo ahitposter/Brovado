@@ -15,6 +15,7 @@ const Chat = ({
     setMessages,
     holdings,
     setHoldings,
+    handleError,
 }) => {
     const [messageContent, setMessageContent] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -297,7 +298,7 @@ const Chat = ({
 
         try {
             const response = await axios.post(
-                "http://localhost:8081/api/v1/image-upload",
+                "https://api.brovado.tech/api/v1/image-upload",
                 formData,
                 {
                     headers: {
@@ -324,8 +325,7 @@ const Chat = ({
 
         const imagePaths = await Promise.all(currentImages.map(uploadImage));
         if (imagePaths.some((path) => path === null)) {
-            // todo toast
-            console.error("Failed to upload one or more images.");
+            handleError("There was a problem uploading one or more images.");
             setShowSpinner(false);
             return;
         }

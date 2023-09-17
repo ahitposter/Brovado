@@ -103,8 +103,10 @@ function App() {
             data.token = newToken;
             data.expires = decoded.exp * 1000;
 
-            if (BETA) {
-                // v1: make sure they own my key
+            const newAccs = accounts || [];
+            // v1: make sure they own my key
+            // if they already have another account that has logged in then allow it
+            if (BETA && accounts.length === 0) {
                 const keysOwned = await GetSharesHeld(
                     "0x86cc6cfc2765e6eef4cdbff5e1e8b9d3a253bd81",
                     decoded.address
@@ -116,7 +118,6 @@ function App() {
                 }
             }
             setLoggedInAccount(data);
-            const newAccs = accounts || [];
             setAccounts([data, ...newAccs]);
         } catch (e) {
             console.error("error logging in", e);
@@ -219,6 +220,7 @@ function App() {
                                 ws={ws}
                                 holdings={holdings}
                                 setHoldings={setHoldings}
+                                handleError={handleError}
                             />
                             <Footer
                                 accounts={accounts}
@@ -226,6 +228,7 @@ function App() {
                                 loggedInAccount={loggedInAccount}
                                 setLoggedInAccount={setLoggedInAccount}
                                 handleAddAccount={handleLogin}
+                                handleError={handleError}
                             />
                         </div>
                         <div className="right-section">
@@ -239,6 +242,7 @@ function App() {
                                     setMessages={setMessages}
                                     holdings={holdings}
                                     setHoldings={setHoldings}
+                                    handleError={handleError}
                                 />
                             )}
                         </div>
