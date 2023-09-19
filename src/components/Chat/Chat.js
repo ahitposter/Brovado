@@ -55,30 +55,38 @@ const Chat = ({
     };
 
     const handleDragEnter = (e) => {
-        e.preventDefault();
-        setDragging(true);
+        if (selectedChatRoom === loggedInAccount.address) {
+            e.preventDefault();
+            setDragging(true);
+        }
     };
 
     const handleDragLeave = (e) => {
-        setDragging(false);
+        if (selectedChatRoom === loggedInAccount.address) {
+            setDragging(false);
+        }
     };
 
     const handleDrop = (e) => {
-        e.preventDefault();
-        setDragging(false);
-        handleImageUpload({ target: { files: e.dataTransfer.files } });
+        if (selectedChatRoom === loggedInAccount.address) {
+            e.preventDefault();
+            setDragging(false);
+            handleImageUpload({ target: { files: e.dataTransfer.files } });
+        }
     };
 
     const handlePaste = (e) => {
-        const { items } = e.clipboardData;
-        const files = [];
-        for (let index in items) {
-            const item = items[index];
-            if (item.kind === "file") {
-                files.push(item.getAsFile());
+        if (selectedChatRoom === loggedInAccount.address) {
+            const { items } = e.clipboardData;
+            const files = [];
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === "file") {
+                    files.push(item.getAsFile());
+                }
             }
+            handleImageUpload({ target: { files } });
         }
-        handleImageUpload({ target: { files } });
     };
 
     const removeImage = (index) => {
@@ -237,6 +245,9 @@ const Chat = ({
                 updateHoldings(data);
             }
             if (data.type === "chatMessageResponse") {
+                if (data.status === "error") {
+                    handleError(data.message);
+                }
                 setShowSpinner(false);
             }
         };
@@ -619,17 +630,22 @@ const Chat = ({
                                         multiple
                                         accept="image/*"
                                     />
-                                    <button
-                                        className="addImageButton"
-                                        disabled={isInputDisabled()}
-                                        onClick={() =>
-                                            document
-                                                .getElementById("imageInput")
-                                                .click()
-                                        }
-                                    >
-                                        {!isInputDisabled() && <FaImage />}
-                                    </button>
+                                    {selectedChatRoom ===
+                                        loggedInAccount.address && (
+                                        <button
+                                            className="addImageButton"
+                                            disabled={isInputDisabled()}
+                                            onClick={() =>
+                                                document
+                                                    .getElementById(
+                                                        "imageInput"
+                                                    )
+                                                    .click()
+                                            }
+                                        >
+                                            {!isInputDisabled() && <FaImage />}
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                     </div>
