@@ -505,12 +505,14 @@ const Chat = ({
                                         />
                                     </div>
                                 ))}
-                            <div className="message-time">
-                                {new Date(
-                                    message.timestamp
-                                ).toLocaleTimeString()}{" "}
-                                - 👀 {message.readByCount || 0}
-                            </div>
+                            {message.sendingUserId === selectedChatRoom && (
+                                <div className="message-time">
+                                    {new Date(
+                                        message.timestamp
+                                    ).toLocaleTimeString()}{" "}
+                                    - 👀 {message.readByCount || 0}
+                                </div>
+                            )}
                         </div>
                         {message.sendingUserId === loggedInAccount.address && (
                             <img

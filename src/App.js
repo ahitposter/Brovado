@@ -45,10 +45,13 @@ function App() {
     const BETA = false;
 
     useEffect(() => {
+        const statusBarTheme = document.querySelector("meta[name=theme-color]");
         if (showRight) {
             document.body.classList.add("show-right");
+            statusBarTheme?.setAttribute("content", "#ffffff");
         } else {
             document.body.classList.remove("show-right");
+            statusBarTheme?.setAttribute("content", "#f2f2f2");
         }
     }, [showRight]);
 
