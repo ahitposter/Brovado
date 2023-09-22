@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import "./ChatHeader.css";
 import { FormatToETH } from "../../utils/helpers";
 import axios from "axios";
+import { GetSharesHeld, web3 } from "../../utils/web3";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTwitter, faEthereum } from "@fortawesome/free-brands-svg-icons";
 import {
-    FT_CONTRACT,
-    FT_CONTRACT_ADDRESS,
-    GetSharesHeld,
-    web3,
-} from "../../utils/web3";
+    faUsers,
+    faKey,
+    faWallet,
+    faUser,
+    faDollarSign,
+    faCoins,
+    faHandshake,
+} from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@material-ui/core";
 
 const ChatHeader = ({
     loggedInAccount,
@@ -87,65 +94,92 @@ const ChatHeader = ({
                         <div className="loading">Loading...</div>
                     ) : (
                         <div className="chat-header">
-                            {/* Left Column */}
-                            <div className="left-column">
-                                {/* Top Left */}
-                                <a
-                                    href={`https://twitter.com/${userDetails.twitterUsername}`}
-                                    target="_blank"
-                                    className="twitter-link"
-                                >
-                                    {userDetails.twitterName}
-                                </a>
-                                {/* Middle Left */}
-                                <div className="key-price">
-                                    Key Price:
-                                    {FormatToETH(userDetails.displayPrice)} ETH
+                            <div className="header-top">
+                                <div className="header-left">
+                                    <a
+                                        href={`https://twitter.com/${userDetails.twitterUsername}`}
+                                        target="_blank"
+                                        className="twitter-link"
+                                    >
+                                        {userDetails.twitterName}
+                                    </a>
+                                    {yourSharesHeld > 0 && (
+                                        <Tooltip title="your shares held by this user">
+                                            <div className="info-item">
+                                                <FontAwesomeIcon
+                                                    icon={faHandshake}
+                                                />
+                                                <span>{yourSharesHeld}</span>
+                                            </div>
+                                        </Tooltip>
+                                    )}
                                 </div>
-                                {/* Bottom Left */}
-                                <a
-                                    href={`https://basescan.org/address/${userDetails.address}`}
-                                    target="_blank"
-                                    className="eth-link"
-                                >
-                                    User's Wallet Balance: {ethBalance} ETH
-                                </a>
+                                <div className="header-right">
+                                    {/* <Tooltip title="key price">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faKey} />
+                                            {FormatToETH(
+                                                userDetails.displayPrice
+                                            )}{" "}
+                                            ETH
+                                        </div>
+                                    </Tooltip> */}
+                                    <Tooltip title="your balance">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faKey} />
+                                            <span>
+                                                {holding.balance} (
+                                                {FormatToETH(
+                                                    holding.balanceEthValue
+                                                )}{" "}
+                                                ETH)
+                                            </span>
+                                        </div>
+                                    </Tooltip>
+                                </div>
                             </div>
 
-                            {/* Middle Column */}
-                            <div className="middle-column">
-                                {/* Top Middle */}
-                                <div className="your-balance">
-                                    {`You hold ${holding.balance} key${
-                                        holding.balance > 1 ? "s" : ""
-                                    } worth ${FormatToETH(
-                                        holding.balanceEthValue
-                                    )} ETH`}
+                            <div className="header-bottom">
+                                <div className="header-left">
+                                    <Tooltip title="user's wallet balance">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faWallet} />
+                                            <a
+                                                href={`https://basescan.org/address/${userDetails.address}`}
+                                                target="_blank"
+                                                className="eth-link"
+                                                style={{ color: "#007aff" }}
+                                            >
+                                                {ethBalance} ETH
+                                            </a>
+                                        </div>
+                                    </Tooltip>
+                                    <Tooltip title="total key supply">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faCoins} />
+                                            <span>
+                                                {userDetails.shareSupply}
+                                            </span>
+                                        </div>
+                                    </Tooltip>
                                 </div>
-                                {/* Middle Middle */}
-                                {yourSharesHeld ? (
-                                    <div className="your-shares">
-                                        This user holds {yourSharesHeld} of your
-                                        keys.
-                                    </div>
-                                ) : null}
-                            </div>
-
-                            {/* Right Column */}
-                            <div className="right-column">
-                                {/* Top Right */}
-                                <div className="shares-supply">
-                                    Key Supply: {userDetails.shareSupply}
-                                </div>
-                                {/* Middle Right */}
-                                <div className="user-keys">
-                                    This user holds {userDetails.holdingCount}{" "}
-                                    keys
-                                </div>
-                                {/* Bottom Right */}
-                                <div className="holders-count">
-                                    {userDetails.holderCount} users hold this
-                                    key
+                                <div className="header-right">
+                                    <Tooltip title="keys held by user">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faUser} />
+                                            <span>
+                                                {userDetails.holdingCount}
+                                            </span>
+                                        </div>
+                                    </Tooltip>
+                                    <Tooltip title="users holding this key">
+                                        <div className="info-item">
+                                            <FontAwesomeIcon icon={faUsers} />
+                                            <span>
+                                                {userDetails.holderCount}
+                                            </span>
+                                        </div>
+                                    </Tooltip>
                                 </div>
                             </div>
                         </div>

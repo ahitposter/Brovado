@@ -33,6 +33,34 @@ html {
     width: 70%;
 }
 
+@media (max-width: 768px) {
+    .left-section, .right-section {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        transition: transform 0.3s;
+    }
+
+    .left-section {
+        z-index: 1;
+        transform: translateX(0);
+    }
+
+    .right-section {
+        transform: translateX(100%);
+        z-index: 2;
+    }
+
+    body.show-right .right-section {
+        transform: translateX(0);
+    }
+
+    body.show-right .left-section {
+        transform: translateX(-100%);
+    }
+}
+
 /* Utility Classes */
 .hidden {
     display: none;

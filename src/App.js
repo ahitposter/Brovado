@@ -17,6 +17,7 @@ import {
 import { Web3Modal } from "@web3modal/react";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { base } from "wagmi/chains";
+import { useSwipeable } from "react-swipeable";
 
 const chains = [base];
 const projectId = "796d520f6d8700dbea3779865fab8dc0";
@@ -39,6 +40,22 @@ function App() {
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [showRight, setShowRight] = useState(false);
+
+    useEffect(() => {
+        if (showRight) {
+            document.body.classList.add("show-right");
+        } else {
+            document.body.classList.remove("show-right");
+        }
+    }, [showRight]);
+
+    const handlers = useSwipeable({
+        onSwipedLeft: () => setShowRight(true),
+        onSwipedRight: () => setShowRight(false),
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: false,
+    });
 
     const BETA = true;
 
@@ -251,11 +268,12 @@ function App() {
                         </div>
                     ) : loggedInAccount ? (
                         <>
-                            <div className="left-section">
+                            <div className="left-section" {...handlers}>
                                 <HoldingsList
                                     loggedInAccount={loggedInAccount}
                                     selectedChatRoom={selectedChatRoom}
                                     setSelectedChatRoom={setSelectedChatRoom}
+                                    chatRoomClicked={() => setShowRight(true)}
                                     ws={ws}
                                     holdings={holdings}
                                     setHoldings={setHoldings}
@@ -270,7 +288,7 @@ function App() {
                                     handleError={handleError}
                                 />
                             </div>
-                            <div className="right-section">
+                            <div className="right-section" {...handlers}>
                                 {selectedChatRoom && ws && (
                                     <Chat
                                         loggedInAccount={loggedInAccount}

@@ -18,6 +18,7 @@ const HoldingsList = ({
     ws,
     holdings,
     setHoldings,
+    chatRoomClicked,
 }) => {
     const [sortDirection, setSortDirection] = useState(
         () => localStorage.getItem("sortDirection") || "desc"
@@ -244,6 +245,11 @@ const HoldingsList = ({
         );
     };
 
+    const selectChatRoom = (chatRoomId) => {
+        setSelectedChatRoom(chatRoomId);
+        chatRoomClicked();
+    };
+
     return (
         <div className="holdings-list">
             <div className="holdings-header">
@@ -329,7 +335,7 @@ const HoldingsList = ({
             <div className="section-title">Your Key</div>
             {myKey && (
                 <div
-                    onClick={() => setSelectedChatRoom(myKey.chatRoomId)}
+                    onClick={() => selectChatRoom(myKey.chatRoomId)}
                     className={`holding-item ${
                         selectedChatRoom === myKey.chatRoomId ? "active" : ""
                     }`}
@@ -343,7 +349,7 @@ const HoldingsList = ({
             {favoriteHoldings?.map((holding, index) => (
                 <div
                     key={index}
-                    onClick={() => setSelectedChatRoom(holding.chatRoomId)}
+                    onClick={() => selectChatRoom(holding.chatRoomId)}
                     className={`holding-item ${
                         selectedChatRoom === holding.chatRoomId ? "active" : ""
                     }`}
@@ -363,7 +369,7 @@ const HoldingsList = ({
             {allHoldings?.map((holding, index) => (
                 <div
                     key={index}
-                    onClick={() => setSelectedChatRoom(holding.chatRoomId)}
+                    onClick={() => selectChatRoom(holding.chatRoomId)}
                     className={`holding-item ${
                         selectedChatRoom === holding.chatRoomId ? "active" : ""
                     }`}
