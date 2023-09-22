@@ -164,6 +164,7 @@ Issued At: ${new Date().toISOString()}`;
                             {isUsingJWT ? (
                                 <>
                                     <input
+                                        inputMode="text"
                                         className="login-container-input"
                                         placeholder="Paste your FriendTech JWT token"
                                         value={token}

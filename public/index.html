@@ -9,7 +9,7 @@
         img-src 'self' data: *.cloudfront.net *.twimg.com *.walletconnect.com;
         script-src 'self' va.vercel-scripts.com;
         style-src 'self' 'unsafe-inline';
-        connect-src 'self' *.brovado.tech prod-api.kosetto.com wss://prod-api.kosetto.com mainnet.base.org wss://mainnet.base.org vitals.vercel-insights.com *.walletconnect.org *.walletconnect.com wss://relay.walletconnect.com ;
+        connect-src 'self' data: localhost:8081 *.brovado.tech prod-api.kosetto.com wss://prod-api.kosetto.com mainnet.base.org wss://mainnet.base.org vitals.vercel-insights.com *.walletconnect.org *.walletconnect.com wss://relay.walletconnect.com ;
         font-src 'self';
         object-src 'none';
         base-uri 'self';
@@ -18,7 +18,10 @@
       "
         />
         <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
         <meta name="theme-color" content="#000000" />
         <meta name="Brovado" content="Brovado" />
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
