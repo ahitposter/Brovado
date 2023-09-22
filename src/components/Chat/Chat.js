@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import { TrimQuotes, ConvertUrlsToLinks } from "../../utils/helpers";
+import { NormalizeMessage, ConvertUrlsToLinks, API_HOST } from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 import { FaImage } from "react-icons/fa";
 import axios from "axios";
@@ -309,7 +309,7 @@ const Chat = ({
 
         try {
             const response = await axios.post(
-                "https://api.brovado.tech/api/v1/image-upload",
+                `${API_HOST}/api/v1/image-upload`,
                 formData,
                 {
                     headers: {
@@ -364,7 +364,7 @@ const Chat = ({
         handleCancelReply();
     };
 
-    const ReplyCard = ({ message }) => {
+    const ReplyCard = ({ message, isMyMessage }) => {
         return (
             <div className="reply-card">
                 <img
@@ -378,9 +378,8 @@ const Chat = ({
                         className="reply-text"
                         dangerouslySetInnerHTML={{
                             __html: ConvertUrlsToLinks(
-                                TrimQuotes(message.text),
-                                message.sendingUserId ===
-                                    loggedInAccount.address
+                                NormalizeMessage(message.text),
+                                isMyMessage
                             ),
                         }}
                     />
@@ -410,7 +409,7 @@ const Chat = ({
                         </button>
                     </div>
                     <span className="reply-text">
-                        {TrimQuotes(message.text)}
+                        {NormalizeMessage(message.text)}
                     </span>
                 </div>
             </div>
@@ -451,7 +450,7 @@ const Chat = ({
                         <div className="message-content">
                             <div className="message-sender-reply">
                                 <span className="message-sender">
-                                    {TrimQuotes(message.twitterName)}
+                                    {NormalizeMessage(message.twitterName)}
                                 </span>
                                 {selectedChatRoom === loggedInAccount.address &&
                                     message.sendingUserId !==
@@ -471,13 +470,17 @@ const Chat = ({
                             {message.replyingToMessage && (
                                 <ReplyCard
                                     message={message.replyingToMessage}
+                                    isMyMessage={
+                                        message.sendingUserId ===
+                                        loggedInAccount.address
+                                    }
                                 />
                             )}
                             <div
                                 className="message-text"
                                 dangerouslySetInnerHTML={{
                                     __html: ConvertUrlsToLinks(
-                                        TrimQuotes(message.text),
+                                        NormalizeMessage(message.text),
                                         message.sendingUserId ===
                                             loggedInAccount.address
                                     ),

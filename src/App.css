@@ -8,6 +8,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
+    overflow-x: hidden;
     background: #f2f2f2; /* Light Gray Background */
 }
 
@@ -31,6 +32,35 @@ html {
 
 .right-section {
     width: 70%;
+}
+
+@media (max-width: 999px) {
+    .left-section,
+    .right-section {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        transition: transform 0.3s;
+    }
+
+    .left-section {
+        z-index: 1;
+        transform: translateX(0);
+    }
+
+    .right-section {
+        transform: translateX(100%);
+        z-index: 2;
+    }
+
+    body.show-right .right-section {
+        transform: translateX(0);
+    }
+
+    body.show-right .left-section {
+        transform: translateX(-100%);
+    }
 }
 
 /* Utility Classes */
@@ -81,7 +111,7 @@ html {
 }
 
 .error-bar {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;

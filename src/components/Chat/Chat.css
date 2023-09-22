@@ -1,3 +1,64 @@
+@media (max-width: 999px) {
+    .messages {
+        padding: 8px; /* Reduced padding for mobile */
+    }
+
+    .message {
+        margin-bottom: 8px; /* Reduced margin for mobile */
+    }
+
+    .message-content {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 6px 12px; /* Reduced padding for mobile */
+    }
+
+    .message-pfp {
+        width: 30px; /* Smaller profile picture for mobile */
+        height: 30px;
+    }
+
+    .message-text {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+
+    .message-time {
+        font-size: 12px; /* Smaller font size for mobile */
+    }
+
+    .message-input {
+        min-height: 4rem; /* Reduced height for mobile */
+    }
+
+    .input-textarea {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 6px 10px; /* Reduced padding for mobile */
+    }
+
+    .addImageButton,
+    .sendButton {
+        width: 80px; /* Smaller width for mobile */
+        height: 30px; /* Smaller height for mobile */
+    }
+
+    .image-card img {
+        max-width: 200px; /* Smaller max width for mobile */
+        max-height: 200px; /* Smaller max height for mobile */
+    }
+
+    .reply-card-input {
+        max-width: 50%; /* Reduced max width for mobile */
+    }
+
+    .image-preview-container {
+        padding: 4px; /* Reduced padding for mobile */
+    }
+
+    .image-preview {
+        width: 60px; /* Smaller width for mobile */
+        height: 60px; /* Smaller height for mobile */
+    }
+}
+
 .chat-container {
     display: flex;
     flex-direction: column;

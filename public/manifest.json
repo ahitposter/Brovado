@@ -1,6 +1,7 @@
 {
     "short_name": "Brovado",
     "name": "Brovado",
+    "description": "The all in one interface for FriendTech",
     "icons": [
         {
             "src": "favicon.ico",
