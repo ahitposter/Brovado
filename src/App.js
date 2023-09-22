@@ -42,6 +42,8 @@ function App() {
     const [isLoading, setIsLoading] = useState(true);
     const [showRight, setShowRight] = useState(false);
 
+    const BETA = false;
+
     useEffect(() => {
         if (showRight) {
             document.body.classList.add("show-right");
@@ -56,8 +58,6 @@ function App() {
         preventDefaultTouchmoveEvent: true,
         trackMouse: false,
     });
-
-    const BETA = true;
 
     useEffect(() => {
         const tokens = JSON.parse(localStorage.getItem("tokens")) || [];

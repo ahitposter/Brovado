@@ -5,6 +5,9 @@ import { useAccount } from "wagmi";
 import { useSignMessage } from "wagmi";
 import axios from "axios";
 import { API_HOST, isValidJWT } from "../../utils/helpers";
+import { Tooltip } from "@mui/material";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Login = ({ handleLogin, handleError, onClose }) => {
     const { address, isConnected } = useAccount();
@@ -98,6 +101,7 @@ Issued At: ${new Date().toISOString()}`;
             signMessage({ message });
         } catch (error) {
             handleError("There was an error signing you in");
+            setIsLoading(false);
             console.error(error);
         }
     };
@@ -114,31 +118,38 @@ Issued At: ${new Date().toISOString()}`;
                             ? "Sign in with your FriendTech JWT token"
                             : "Sign in with your FriendTech wallet"}
                     </h2>
-                    <div className="tooltip">
-                        ?
-                        <span className="tooltiptext">
-                            By signing into Brovado, you are granting this
-                            <br />
-                            website access to authenticate against FriendTech
-                            <br />
-                            APIs. This includes interacting with the chat as
-                            <br />
-                            well as loading your profile information.
-                            <br />
-                            <br />
-                            This does not expose any access to your FriendTech
-                            <br />
-                            wallet nor does it allow Brovado to execute any
-                            <br />
-                            on-chain actions on your behalf.
-                            <br />
-                            <br />
-                            Brovado is never storing or logging your FriendTech
-                            <br />
-                            token.
-                            <br />
-                        </span>
-                    </div>
+                    <Tooltip
+                        placement="bottom-end"
+                        title={
+                            <span style={{ fontSize: "12px" }}>
+                                By signing into Brovado, you are granting this
+                                <br />
+                                website access to authenticate against
+                                FriendTech
+                                <br />
+                                APIs. This includes interacting with the chat as
+                                <br />
+                                well as loading your profile information.
+                                <br />
+                                <br />
+                                This does not expose any access to your
+                                FriendTech
+                                <br />
+                                wallet nor does it allow Brovado to execute any
+                                <br />
+                                on-chain actions on your behalf.
+                                <br />
+                                <br />
+                                Brovado is never storing or logging your
+                                FriendTech
+                                <br />
+                                token, except locally on your browser.
+                                <br />
+                            </span>
+                        }
+                    >
+                        <FontAwesomeIcon icon={faQuestionCircle} />
+                    </Tooltip>
                 </div>
                 {isLoading ? (
                     <div className="spinner" />

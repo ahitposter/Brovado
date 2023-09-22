@@ -14,7 +14,7 @@ import {
     faCoins,
     faHandshake,
 } from "@fortawesome/free-solid-svg-icons";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip } from "@mui/material";
 
 const ChatHeader = ({
     loggedInAccount,

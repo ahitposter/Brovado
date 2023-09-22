@@ -8,6 +8,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
+    overflow-x: hidden;
     background: #f2f2f2; /* Light Gray Background */
 }
 
@@ -33,8 +34,9 @@ html {
     width: 70%;
 }
 
-@media (max-width: 768px) {
-    .left-section, .right-section {
+@media (max-width: 999px) {
+    .left-section,
+    .right-section {
         width: 100%;
         position: absolute;
         top: 0;
@@ -109,7 +111,7 @@ html {
 }
 
 .error-bar {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;

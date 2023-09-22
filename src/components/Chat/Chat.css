@@ -1,4 +1,4 @@
-@media (max-width: 768px) {
+@media (max-width: 999px) {
     .messages {
         padding: 8px; /* Reduced padding for mobile */
     }

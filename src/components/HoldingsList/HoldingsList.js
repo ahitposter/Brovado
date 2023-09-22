@@ -126,10 +126,7 @@ const HoldingsList = ({
             !favorites.includes(holding.chatRoomId)
     );
 
-    useEffect(() => {
-        if (!loggedInAccount) {
-            return;
-        }
+    const loadHoldings = () => {
         axios
             .get(
                 `https://prod-api.kosetto.com/portfolio/${loggedInAccount.address}`,
@@ -141,20 +138,36 @@ const HoldingsList = ({
             )
             .then((res) => {
                 if (res.data.holdings?.length) {
-                    // select my chatroom || first chatroom by default
-                    const firstKey =
-                        res.data.holdings.find(
-                            (n) => loggedInAccount.address === n.chatRoomId
-                        ) || res.data.holdings[0];
-                    firstKey.lastRead = Date.now();
                     setHoldings(res.data.holdings);
-                    setSelectedChatRoom(firstKey.chatRoomId || ""); // Select the first chatroom by default
+                    if (!selectedChatRoom?.length) {
+                        // select my chatroom || first chatroom by default
+                        const firstKey =
+                            res.data.holdings.find(
+                                (n) => loggedInAccount.address === n.chatRoomId
+                            ) || res.data.holdings[0];
+                        firstKey.lastRead = Date.now();
+                        setSelectedChatRoom(firstKey.chatRoomId || "");
+                    }
                 }
             })
             .catch((err) => {
                 console.error("Error fetching holdings:", err);
             });
+    };
+
+    useEffect(() => {
+        if (!loggedInAccount) {
+            return;
+        }
+        loadHoldings();
     }, [loggedInAccount]);
+
+    useEffect(() => {
+        const reloadHoldings = setInterval(loadHoldings, 60000);
+        return () => {
+            clearTimeout(reloadHoldings);
+        };
+    }, []);
 
     const isOnline = (lastOnline) => {
         const currentTime = Date.now();
