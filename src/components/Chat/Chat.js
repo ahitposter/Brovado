@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import { NormalizeMessage, ConvertUrlsToLinks, API_HOST } from "../../utils/helpers";
+import {
+    NormalizeMessage,
+    ConvertUrlsToLinks,
+    API_HOST,
+} from "../../utils/helpers";
 import { v4 as uuidv4 } from "uuid";
 import { FaImage } from "react-icons/fa";
 import axios from "axios";
@@ -626,6 +630,7 @@ const Chat = ({
                                         Send
                                     </button>
                                     <input
+                                        inputMode="text"
                                         type="file"
                                         id="imageInput"
                                         style={{ display: "none" }}

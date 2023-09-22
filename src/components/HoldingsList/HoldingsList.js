@@ -336,6 +336,7 @@ const HoldingsList = ({
                 ) : (
                     <div className="search-bar">
                         <input
+                            inputMode="text"
                             type="text"
                             placeholder="Search"
                             value={searchTerm}
