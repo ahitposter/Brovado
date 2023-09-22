@@ -9,6 +9,24 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { GetSharesHeld } from "./utils/web3";
 import ErrorBoundary from "./components/Errors/ErrorBoundary";
+import {
+    EthereumClient,
+    w3mConnectors,
+    w3mProvider,
+} from "@web3modal/ethereum";
+import { Web3Modal } from "@web3modal/react";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import { base } from "wagmi/chains";
+
+const chains = [base];
+const projectId = "796d520f6d8700dbea3779865fab8dc0";
+const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
+const wagmiConfig = createConfig({
+    autoConnect: true,
+    connectors: w3mConnectors({ projectId, chains }),
+    publicClient,
+});
+const ethereumClient = new EthereumClient(wagmiConfig, chains);
 
 function App() {
     const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -46,6 +64,7 @@ function App() {
                 );
                 let data = response.data;
                 data.token = token;
+                data.address = decoded.address;
                 data.expires = decoded.exp * 1000;
                 if (BETA) {
                     // v1: make sure they own my key
@@ -64,9 +83,19 @@ function App() {
 
         const loadUsers = async () => {
             Promise.allSettled(fetchUserInfoPromises).then((results) => {
+                const uniqueAddresses = new Set();
                 const users = results
                     .map((obj) => obj.value)
-                    ?.filter((n) => n != null);
+                    ?.filter((n) => {
+                        if (n == null) {
+                            return false;
+                        }
+                        if (!uniqueAddresses.has(n.address)) {
+                            uniqueAddresses.add(n.address);
+                            return true;
+                        }
+                        return false;
+                    });
 
                 const oneUserHasKey = users?.some((n) => n.keysOwned > 0);
                 let selectedUser;
@@ -101,6 +130,7 @@ function App() {
             );
             let data = response.data;
             data.token = newToken;
+            data.address = decoded.address;
             data.expires = decoded.exp * 1000;
 
             const newAccs = accounts || [];
@@ -119,6 +149,12 @@ function App() {
                     return;
                 }
             }
+
+            if (newAccs.some((n) => n.address === decoded.address)) {
+                handleError("This account is already signed in");
+                return;
+            }
+
             setLoggedInAccount(data);
             setAccounts([data, ...newAccs]);
         } catch (e) {
@@ -201,58 +237,64 @@ function App() {
 
     return (
         <ErrorBoundary handleError={handleError}>
-            <div className="app-container">
-                {showError && (
-                    <ErrorBar
-                        message={errorMessage}
-                        onClose={handleCloseError}
-                    />
-                )}
-                {isLoading ? (
-                    <div className="spinner-container">
-                        <div className="spinner"></div>
-                    </div>
-                ) : loggedInAccount ? (
-                    <>
-                        <div className="left-section">
-                            <HoldingsList
-                                loggedInAccount={loggedInAccount}
-                                selectedChatRoom={selectedChatRoom}
-                                setSelectedChatRoom={setSelectedChatRoom}
-                                ws={ws}
-                                holdings={holdings}
-                                setHoldings={setHoldings}
-                                handleError={handleError}
-                            />
-                            <Footer
-                                accounts={accounts}
-                                setAccounts={setAccounts}
-                                loggedInAccount={loggedInAccount}
-                                setLoggedInAccount={setLoggedInAccount}
-                                handleAddAccount={handleLogin}
-                                handleError={handleError}
-                            />
+            <WagmiConfig config={wagmiConfig}>
+                <div className="app-container">
+                    {showError && (
+                        <ErrorBar
+                            message={errorMessage}
+                            onClose={handleCloseError}
+                        />
+                    )}
+                    {isLoading ? (
+                        <div className="spinner-container">
+                            <div className="spinner"></div>
                         </div>
-                        <div className="right-section">
-                            {selectedChatRoom && ws && (
-                                <Chat
+                    ) : loggedInAccount ? (
+                        <>
+                            <div className="left-section">
+                                <HoldingsList
                                     loggedInAccount={loggedInAccount}
                                     selectedChatRoom={selectedChatRoom}
+                                    setSelectedChatRoom={setSelectedChatRoom}
                                     ws={ws}
-                                    isWsReady={isWsReady}
-                                    messages={messages}
-                                    setMessages={setMessages}
                                     holdings={holdings}
                                     setHoldings={setHoldings}
                                     handleError={handleError}
                                 />
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <Login onLogin={handleLogin} />
-                )}
-            </div>
+                                <Footer
+                                    accounts={accounts}
+                                    setAccounts={setAccounts}
+                                    loggedInAccount={loggedInAccount}
+                                    setLoggedInAccount={setLoggedInAccount}
+                                    handleLogin={handleLogin}
+                                    handleError={handleError}
+                                />
+                            </div>
+                            <div className="right-section">
+                                {selectedChatRoom && ws && (
+                                    <Chat
+                                        loggedInAccount={loggedInAccount}
+                                        selectedChatRoom={selectedChatRoom}
+                                        ws={ws}
+                                        isWsReady={isWsReady}
+                                        messages={messages}
+                                        setMessages={setMessages}
+                                        holdings={holdings}
+                                        setHoldings={setHoldings}
+                                        handleError={handleError}
+                                    />
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        <Login
+                            handleLogin={handleLogin}
+                            handleError={handleError}
+                        />
+                    )}
+                </div>
+            </WagmiConfig>
+            <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
         </ErrorBoundary>
     );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./HoldingsList.css";
 import { v4 as uuidv4 } from "uuid";
-import { FormatToETH, TimeSince, TrimQuotes } from "../../utils/helpers";
+import { FormatToETH, TimeSince, NormalizeMessage } from "../../utils/helpers";
 import {
     FaSearch,
     FaSortAmountDown,
@@ -225,7 +225,7 @@ const HoldingsList = ({
                     >
                         {`${holding.lastMessageName}: ${
                             holding.lastMessageText
-                                ? TrimQuotes(holding.lastMessageText)
+                                ? NormalizeMessage(holding.lastMessageText)
                                 : "Sent an image"
                         }`}
                     </div>

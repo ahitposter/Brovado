@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Footer.css";
 import { TimeUntil } from "../../utils/helpers";
-import TokenModal from "./TokenModal";
+import Login from "../Login/Login";
 
 const Footer = ({
     accounts,
     setAccounts,
     loggedInAccount,
     setLoggedInAccount,
-    handleAddAccount,
+    handleLogin,
+    handleError,
 }) => {
     const [submenuVisible, setSubmenuVisible] = useState(false);
     const submenuRef = useRef(null);
     const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
 
     const openTokenModal = () => {
+        setSubmenuVisible(false);
         setIsTokenModalOpen(true);
     };
 
@@ -62,9 +64,10 @@ const Footer = ({
     return (
         <div className="footer">
             {isTokenModalOpen && (
-                <TokenModal
+                <Login
                     onClose={closeTokenModal}
-                    onAddToken={handleAddAccount}
+                    handleLogin={handleLogin}
+                    handleError={handleError}
                 />
             )}
 
