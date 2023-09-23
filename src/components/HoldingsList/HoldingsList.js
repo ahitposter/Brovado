@@ -36,6 +36,7 @@ const HoldingsList = ({
     const sortIconRef = useRef(null);
     const sortOptionsRef = useRef(null);
     const selectedChatRoomRef = useRef(selectedChatRoom);
+    const loggedInAccountRef = useRef(loggedInAccount);
 
     useEffect(() => {
         selectedChatRoomRef.current = selectedChatRoom;
@@ -135,7 +136,8 @@ const HoldingsList = ({
         if (!loggedInAccount) {
             return;
         }
-        loadHoldings();
+        loggedInAccountRef.current = loggedInAccount;
+        loadHoldings(true);
     }, [loggedInAccount]);
 
     useEffect(() => {
@@ -145,24 +147,28 @@ const HoldingsList = ({
         };
     }, []);
 
-    const loadHoldings = () => {
+    const loadHoldings = (forceSelection) => {
+        const account = loggedInAccountRef.current;
+        if (!account) {
+            return;
+        }
         axios
-            .get(
-                `https://prod-api.kosetto.com/portfolio/${loggedInAccount.address}`,
-                {
-                    headers: {
-                        Authorization: loggedInAccount.token,
-                    },
-                }
-            )
+            .get(`https://prod-api.kosetto.com/portfolio/${account.address}`, {
+                headers: {
+                    Authorization: account.token,
+                },
+            })
             .then((res) => {
                 if (res.data.holdings?.length) {
                     setHoldings(res.data.holdings);
-                    if (!selectedChatRoomRef.current?.length) {
+                    if (
+                        !selectedChatRoomRef.current?.length ||
+                        forceSelection
+                    ) {
                         // select my chatroom || first chatroom by default
                         const firstKey =
                             res.data.holdings.find(
-                                (n) => loggedInAccount.address === n.chatRoomId
+                                (n) => account.address === n.chatRoomId
                             ) || res.data.holdings[0];
                         firstKey.lastRead = Date.now();
                         setSelectedChatRoom(firstKey.chatRoomId || "");

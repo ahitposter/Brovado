@@ -255,7 +255,7 @@ const Chat = ({
                 setShowSpinner(false);
             }
         };
-    }, [selectedChatRoom, isWsReady]);
+    }, [selectedChatRoom]);
 
     const updateLastRead = (chatRoomId) => {
         let shallow = [...holdings];
