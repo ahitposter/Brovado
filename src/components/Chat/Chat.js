@@ -608,8 +608,14 @@ const Chat = ({
                             disabled={isInputDisabled()}
                             onKeyDown={(e) => {
                                 if (e.key === "Enter" && !e.shiftKey) {
-                                    e.preventDefault();
-                                    sendMessage();
+                                    const isMobile =
+                                        /iPhone|iPad|iPod|Android/i.test(
+                                            window.navigator.userAgent
+                                        );
+                                    if (!isMobile) {
+                                        e.preventDefault();
+                                        sendMessage();
+                                    }
                                 }
                             }}
                         />
