@@ -35,6 +35,11 @@ const HoldingsList = ({
     const [showSortOptions, setShowSortOptions] = useState(false);
     const sortIconRef = useRef(null);
     const sortOptionsRef = useRef(null);
+    const selectedChatRoomRef = useRef(selectedChatRoom);
+
+    useEffect(() => {
+        selectedChatRoomRef.current = selectedChatRoom;
+    }, [selectedChatRoom]);
 
     useEffect(() => {
         localStorage.setItem("sortDirection", sortDirection);
@@ -126,6 +131,20 @@ const HoldingsList = ({
             !favorites.includes(holding.chatRoomId)
     );
 
+    useEffect(() => {
+        if (!loggedInAccount) {
+            return;
+        }
+        loadHoldings();
+    }, [loggedInAccount]);
+
+    useEffect(() => {
+        const reloadHoldings = setInterval(loadHoldings, 60000);
+        return () => {
+            clearInterval(reloadHoldings);
+        };
+    }, []);
+
     const loadHoldings = () => {
         axios
             .get(
@@ -139,7 +158,7 @@ const HoldingsList = ({
             .then((res) => {
                 if (res.data.holdings?.length) {
                     setHoldings(res.data.holdings);
-                    if (!selectedChatRoom?.length) {
+                    if (!selectedChatRoomRef.current?.length) {
                         // select my chatroom || first chatroom by default
                         const firstKey =
                             res.data.holdings.find(
@@ -154,20 +173,6 @@ const HoldingsList = ({
                 console.error("Error fetching holdings:", err);
             });
     };
-
-    useEffect(() => {
-        if (!loggedInAccount) {
-            return;
-        }
-        loadHoldings();
-    }, [loggedInAccount]);
-
-    useEffect(() => {
-        const reloadHoldings = setInterval(loadHoldings, 60000);
-        return () => {
-            clearTimeout(reloadHoldings);
-        };
-    }, []);
 
     const isOnline = (lastOnline) => {
         const currentTime = Date.now();
