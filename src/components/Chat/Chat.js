@@ -439,248 +439,269 @@ const Chat = ({
 
     return (
         <div className="chat-container">
-            {((messages.length == 0 && isLoading) || !isWsReady) && (
+            {!isWsReady ? (
                 <div className="loading">Loading...</div>
-            )}
-            <ChatHeader
-                loggedInAccount={loggedInAccount}
-                visible={messages.length > 0}
-                selectedChatRoom={selectedChatRoom}
-                holding={holdings.find(
-                    (n) => n.chatRoomId === selectedChatRoom
-                )}
-            />
-            <div className="messages" ref={messagesContainerRef}>
-                {messages.map((message, index) => (
-                    <div
-                        key={index}
-                        ref={index === 2 ? secondLastMessageRef : null}
-                        className={`message ${
-                            message.sendingUserId === loggedInAccount.address
-                                ? "mine"
-                                : "others"
-                        }`}
-                    >
-                        {message.sendingUserId !== loggedInAccount.address && (
-                            <img
-                                className="message-pfp"
-                                src={message.twitterPfpUrl}
-                                alt={message.twitterName}
-                            />
+            ) : (
+                <>
+                    {messages.length == 0 && isLoading && (
+                        <div className="loading">Loading...</div>
+                    )}
+                    <ChatHeader
+                        loggedInAccount={loggedInAccount}
+                        visible={messages.length > 0}
+                        selectedChatRoom={selectedChatRoom}
+                        holding={holdings.find(
+                            (n) => n.chatRoomId === selectedChatRoom
                         )}
-                        <div className="message-content">
-                            <div className="message-sender-reply">
-                                <span className="message-sender">
-                                    {NormalizeMessage(message.twitterName)}
-                                </span>
-                                {selectedChatRoom === loggedInAccount.address &&
-                                    message.sendingUserId !==
-                                        loggedInAccount.address && (
-                                        <img
-                                            className="reply-arrow"
-                                            src={`${process.env.PUBLIC_URL}/replyArrow.svg`}
-                                            alt="Reply"
-                                            onClick={() =>
-                                                !isInputDisabled() &&
-                                                handleReply(message)
+                    />
+                    <div className="messages" ref={messagesContainerRef}>
+                        {messages.map((message, index) => (
+                            <div
+                                key={index}
+                                ref={index === 2 ? secondLastMessageRef : null}
+                                className={`message ${
+                                    message.sendingUserId ===
+                                    loggedInAccount.address
+                                        ? "mine"
+                                        : "others"
+                                }`}
+                            >
+                                {message.sendingUserId !==
+                                    loggedInAccount.address && (
+                                    <img
+                                        className="message-pfp"
+                                        src={message.twitterPfpUrl}
+                                        alt={message.twitterName}
+                                    />
+                                )}
+                                <div className="message-content">
+                                    <div className="message-sender-reply">
+                                        <span className="message-sender">
+                                            {NormalizeMessage(
+                                                message.twitterName
+                                            )}
+                                        </span>
+                                        {selectedChatRoom ===
+                                            loggedInAccount.address &&
+                                            message.sendingUserId !==
+                                                loggedInAccount.address && (
+                                                <img
+                                                    className="reply-arrow"
+                                                    src={`${process.env.PUBLIC_URL}/replyArrow.svg`}
+                                                    alt="Reply"
+                                                    onClick={() =>
+                                                        !isInputDisabled() &&
+                                                        handleReply(message)
+                                                    }
+                                                />
+                                            )}
+                                    </div>
+
+                                    {message.replyingToMessage && (
+                                        <ReplyCard
+                                            message={message.replyingToMessage}
+                                            isMyMessage={
+                                                message.sendingUserId ===
+                                                loggedInAccount.address
                                             }
                                         />
                                     )}
-                            </div>
-
-                            {message.replyingToMessage && (
-                                <ReplyCard
-                                    message={message.replyingToMessage}
-                                    isMyMessage={
-                                        message.sendingUserId ===
-                                        loggedInAccount.address
-                                    }
-                                />
-                            )}
-                            <div
-                                className="message-text"
-                                dangerouslySetInnerHTML={{
-                                    __html: ConvertUrlsToLinks(
-                                        NormalizeMessage(message.text),
-                                        message.sendingUserId ===
-                                            loggedInAccount.address
-                                    ),
-                                }}
-                            />
-                            {message.imageUrls &&
-                                message.imageUrls.map((url, idx) => (
                                     <div
-                                        key={idx}
-                                        className="image-card"
-                                        onClick={() => setShowZoomedImage(url)}
-                                    >
-                                        <img
-                                            className="chat-image"
-                                            src={url}
-                                            alt="Message Attachment"
-                                            onLoad={handleImageLoad}
-                                        />
-                                    </div>
-                                ))}
-                            <div className="message-time">
-                                {new Date(
-                                    message.timestamp
-                                ).toLocaleTimeString()}
-                                {message.sendingUserId === selectedChatRoom &&
-                                    ` - 👀 ${message.readByCount || 0}`}
-                            </div>
-                        </div>
-                        {message.sendingUserId === loggedInAccount.address && (
-                            <img
-                                className="message-pfp"
-                                src={message.twitterPfpUrl}
-                                alt={message.twitterName}
-                            />
-                        )}
-                    </div>
-                ))}
-                {showZoomedImage && (
-                    <div
-                        className="zoomed-image-overlay"
-                        onClick={() => {
-                            setShowZoomedImage(null);
-                        }}
-                    >
-                        <img
-                            className="zoomed-image"
-                            src={showZoomedImage}
-                            alt="Zoomed"
-                        />
-                    </div>
-                )}
-                {messages.length > 0 && isLoading && (
-                    <div className="loading">Loading...</div>
-                )}
-            </div>
-
-            {messages.length > 0 ? (
-                <div className="input-area">
-                    <div className="reply-and-image-container">
-                        {replyingTo[selectedChatRoom] && (
-                            <ReplyCardWithClose
-                                message={replyingTo[selectedChatRoom]}
-                            />
-                        )}
-                        {attachedImages[selectedChatRoom]?.length ? (
-                            <div className="image-preview-container">
-                                {attachedImages[selectedChatRoom]?.map(
-                                    (image, index) => (
-                                        <div
-                                            key={index}
-                                            className="image-preview"
-                                        >
-                                            <img
-                                                src={image}
-                                                alt={`Attachment ${index}`}
-                                            />
+                                        className="message-text"
+                                        dangerouslySetInnerHTML={{
+                                            __html: ConvertUrlsToLinks(
+                                                NormalizeMessage(message.text),
+                                                message.sendingUserId ===
+                                                    loggedInAccount.address
+                                            ),
+                                        }}
+                                    />
+                                    {message.imageUrls &&
+                                        message.imageUrls.map((url, idx) => (
                                             <div
-                                                className="remove-image-icon"
+                                                key={idx}
+                                                className="image-card"
                                                 onClick={() =>
-                                                    removeImage(index)
+                                                    setShowZoomedImage(url)
                                                 }
                                             >
-                                                X
+                                                <img
+                                                    className="chat-image"
+                                                    src={url}
+                                                    alt="Message Attachment"
+                                                    onLoad={handleImageLoad}
+                                                />
                                             </div>
-                                        </div>
-                                    )
+                                        ))}
+                                    <div className="message-time">
+                                        {new Date(
+                                            message.timestamp
+                                        ).toLocaleTimeString()}
+                                        {message.sendingUserId ===
+                                            selectedChatRoom &&
+                                            ` - 👀 ${message.readByCount || 0}`}
+                                    </div>
+                                </div>
+                                {message.sendingUserId ===
+                                    loggedInAccount.address && (
+                                    <img
+                                        className="message-pfp"
+                                        src={message.twitterPfpUrl}
+                                        alt={message.twitterName}
+                                    />
                                 )}
                             </div>
-                        ) : null}
+                        ))}
+                        {showZoomedImage && (
+                            <div
+                                className="zoomed-image-overlay"
+                                onClick={() => {
+                                    setShowZoomedImage(null);
+                                }}
+                            >
+                                <img
+                                    className="zoomed-image"
+                                    src={showZoomedImage}
+                                    alt="Zoomed"
+                                />
+                            </div>
+                        )}
+                        {messages.length > 0 && isLoading && (
+                            <div className="loading">Loading...</div>
+                        )}
                     </div>
-                    <div
-                        className={`message-input ${
-                            isInputDisabled() ? "disabled" : ""
-                        }`}
-                    >
-                        <textarea
-                            onDragEnter={handleDragEnter}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            onPaste={handlePaste}
-                            className={`input-textarea ${
-                                !isInputDisabled() && dragging ? "dragging" : ""
-                            }`}
-                            rows="2"
-                            placeholder={
-                                replyingTo[selectedChatRoom]
-                                    ? "Reply..."
-                                    : "Write something..."
-                            }
-                            value={
-                                isInputDisabled()
-                                    ? "You can send up to three messages at a time. Please wait for the host to respond before sending more."
-                                    : messageContent[selectedChatRoom] || ""
-                            }
-                            onChange={(e) =>
-                                setMessageContent((prevState) => ({
-                                    ...prevState,
-                                    [selectedChatRoom]: e.target.value,
-                                }))
-                            }
-                            disabled={isInputDisabled()}
-                            onKeyDown={(e) => {
-                                if (
-                                    e.key === "Enter" &&
-                                    !e.shiftKey &&
-                                    !isMobile
-                                ) {
-                                    e.preventDefault();
-                                    sendMessage();
-                                }
-                            }}
-                        />
-                        {!isInputDisabled() &&
-                            (showSpinner ? (
-                                <div className="spinner" />
-                            ) : (
-                                // <div
-                                //     className="send-icon"
-                                //     onClick={sendMessage}
-                                //     // disabled={isInputDisabled}
-                                // />
-                                <div className="button-group">
-                                    <button
-                                        className="sendButton"
-                                        onClick={sendMessage}
-                                        disabled={isInputDisabled()}
-                                    >
-                                        Send
-                                    </button>
-                                    <input
-                                        inputMode="text"
-                                        type="file"
-                                        id="imageInput"
-                                        style={{ display: "none" }}
-                                        onChange={handleImageUpload}
-                                        multiple
-                                        accept="image/*"
+
+                    {messages.length > 0 ? (
+                        <div className="input-area">
+                            <div className="reply-and-image-container">
+                                {replyingTo[selectedChatRoom] && (
+                                    <ReplyCardWithClose
+                                        message={replyingTo[selectedChatRoom]}
                                     />
-                                    {selectedChatRoom ===
-                                        loggedInAccount.address && (
-                                        <button
-                                            className="addImageButton"
-                                            disabled={isInputDisabled()}
-                                            onClick={() =>
-                                                document
-                                                    .getElementById(
-                                                        "imageInput"
-                                                    )
-                                                    .click()
-                                            }
-                                        >
-                                            {!isInputDisabled() && <FaImage />}
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
-                    </div>
-                </div>
-            ) : null}
+                                )}
+                                {attachedImages[selectedChatRoom]?.length ? (
+                                    <div className="image-preview-container">
+                                        {attachedImages[selectedChatRoom]?.map(
+                                            (image, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="image-preview"
+                                                >
+                                                    <img
+                                                        src={image}
+                                                        alt={`Attachment ${index}`}
+                                                    />
+                                                    <div
+                                                        className="remove-image-icon"
+                                                        onClick={() =>
+                                                            removeImage(index)
+                                                        }
+                                                    >
+                                                        X
+                                                    </div>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                ) : null}
+                            </div>
+                            <div
+                                className={`message-input ${
+                                    isInputDisabled() ? "disabled" : ""
+                                }`}
+                            >
+                                <textarea
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={handleDrop}
+                                    onPaste={handlePaste}
+                                    className={`input-textarea ${
+                                        !isInputDisabled() && dragging
+                                            ? "dragging"
+                                            : ""
+                                    }`}
+                                    rows="2"
+                                    placeholder={
+                                        replyingTo[selectedChatRoom]
+                                            ? "Reply..."
+                                            : "Write something..."
+                                    }
+                                    value={
+                                        isInputDisabled()
+                                            ? "You can send up to three messages at a time. Please wait for the host to respond before sending more."
+                                            : messageContent[
+                                                  selectedChatRoom
+                                              ] || ""
+                                    }
+                                    onChange={(e) =>
+                                        setMessageContent((prevState) => ({
+                                            ...prevState,
+                                            [selectedChatRoom]: e.target.value,
+                                        }))
+                                    }
+                                    disabled={isInputDisabled()}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === "Enter" &&
+                                            !e.shiftKey &&
+                                            !isMobile
+                                        ) {
+                                            e.preventDefault();
+                                            sendMessage();
+                                        }
+                                    }}
+                                />
+                                {!isInputDisabled() &&
+                                    (showSpinner ? (
+                                        <div className="spinner" />
+                                    ) : (
+                                        // <div
+                                        //     className="send-icon"
+                                        //     onClick={sendMessage}
+                                        //     // disabled={isInputDisabled}
+                                        // />
+                                        <div className="button-group">
+                                            <button
+                                                className="sendButton"
+                                                onClick={sendMessage}
+                                                disabled={isInputDisabled()}
+                                            >
+                                                Send
+                                            </button>
+                                            <input
+                                                inputMode="text"
+                                                type="file"
+                                                id="imageInput"
+                                                style={{ display: "none" }}
+                                                onChange={handleImageUpload}
+                                                multiple
+                                                accept="image/*"
+                                            />
+                                            {selectedChatRoom ===
+                                                loggedInAccount.address && (
+                                                <button
+                                                    className="addImageButton"
+                                                    disabled={isInputDisabled()}
+                                                    onClick={() =>
+                                                        document
+                                                            .getElementById(
+                                                                "imageInput"
+                                                            )
+                                                            .click()
+                                                    }
+                                                >
+                                                    {!isInputDisabled() && (
+                                                        <FaImage />
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    ) : null}
+                </>
+            )}
         </div>
     );
 };
