@@ -34,6 +34,15 @@ const Chat = ({
     const [showSpinner, setShowSpinner] = useState(false);
     const [attachedImages, setAttachedImages] = useState({});
     const [dragging, setDragging] = useState(false);
+    const selectedChatRoomRef = useRef(selectedChatRoom);
+    const holdingsRef = useRef(holdings);
+
+    useEffect(() => {
+        holdingsRef.current = holdings;
+    }, [holdings]);
+    useEffect(() => {
+        selectedChatRoomRef.current = selectedChatRoom;
+    }, [selectedChatRoom]);
 
     const isImageFile = (file) => {
         return file?.type?.split("/")?.[0] === "image";
@@ -213,6 +222,7 @@ const Chat = ({
 
         updateLastRead(selectedChatRoom);
 
+        // should use refs in here
         ws.onmessage = (e) => {
             if (e.data instanceof Blob) {
                 return;
@@ -260,7 +270,7 @@ const Chat = ({
     }, [selectedChatRoom, isWsReady]);
 
     const updateLastRead = (chatRoomId) => {
-        let shallow = [...holdings];
+        let shallow = [...holdingsRef?.current];
         const idx = shallow.findIndex((n) => n.chatRoomId === chatRoomId);
         if (idx === -1) {
             return;
@@ -272,7 +282,7 @@ const Chat = ({
     };
 
     const updateHoldings = (message) => {
-        let shallow = [...holdings];
+        let shallow = [...holdingsRef?.current];
         const idx = shallow.findIndex(
             (n) => n.chatRoomId === message.chatRoomId
         );
@@ -283,8 +293,8 @@ const Chat = ({
         holding.lastMessageName = message.twitterName;
         holding.lastMessageText = message.text;
         holding.lastMessageTime = message.timestamp;
-        if (message.chatRoomId === selectedChatRoom) {
-            holding.lastRead = Date.now();
+        if (message.chatRoomId === selectedChatRoomRef?.current) {
+            holding.lastRead = Date.now() + 100; // their message timestamp comes back in the future lol
         }
 
         shallow[idx] = holding;
