@@ -9,6 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 import { FaImage } from "react-icons/fa";
 import axios from "axios";
 import ChatHeader from "./ChatHeader";
+import { isMobile } from "react-device-detect";
+import { handleChatCommand } from "../../utils/chatCommands";
 
 const Chat = ({
     loggedInAccount,
@@ -255,7 +257,7 @@ const Chat = ({
                 setShowSpinner(false);
             }
         };
-    }, [selectedChatRoom]);
+    }, [selectedChatRoom, isWsReady]);
 
     const updateLastRead = (chatRoomId) => {
         let shallow = [...holdings];
@@ -345,10 +347,15 @@ const Chat = ({
             return;
         }
 
+        let message = currentMessage;
+        if (handleChatCommand(message)) {
+            message = handleChatCommand(message);
+        }
+
         const clientMessageId = uuidv4();
         const payload = {
             action: "sendMessage",
-            text: currentMessage,
+            text: message,
             imagePaths,
             chatRoomId: selectedChatRoom,
             replyingToMessageId: replyingTo[selectedChatRoom]?.messageId,
@@ -422,7 +429,7 @@ const Chat = ({
 
     return (
         <div className="chat-container">
-            {messages.length == 0 && isLoading && (
+            {((messages.length == 0 && isLoading) || !isWsReady) && (
                 <div className="loading">Loading...</div>
             )}
             <ChatHeader
@@ -607,15 +614,13 @@ const Chat = ({
                             }
                             disabled={isInputDisabled()}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
-                                    const isMobile =
-                                        /iPhone|iPad|iPod|Android/i.test(
-                                            window.navigator.userAgent
-                                        );
-                                    if (!isMobile) {
-                                        e.preventDefault();
-                                        sendMessage();
-                                    }
+                                if (
+                                    e.key === "Enter" &&
+                                    !e.shiftKey &&
+                                    !isMobile
+                                ) {
+                                    e.preventDefault();
+                                    sendMessage();
                                 }
                             }}
                         />
