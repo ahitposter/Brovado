@@ -147,37 +147,44 @@ const HoldingsList = ({
         };
     }, []);
 
-    const loadHoldings = (forceSelection) => {
+    const loadHoldings = async (forceSelection) => {
         const account = loggedInAccountRef.current;
         if (!account) {
             return;
         }
-        axios
-            .get(`https://prod-api.kosetto.com/portfolio/${account.address}`, {
-                headers: {
-                    Authorization: account.token,
-                },
-            })
-            .then((res) => {
-                if (res.data.holdings?.length) {
-                    setHoldings(res.data.holdings);
-                    if (
-                        !selectedChatRoomRef.current?.length ||
-                        forceSelection
-                    ) {
-                        // select my chatroom || first chatroom by default
-                        const firstKey =
-                            res.data.holdings.find(
-                                (n) => account.address === n.chatRoomId
-                            ) || res.data.holdings[0];
-                        firstKey.lastRead = Date.now();
-                        setSelectedChatRoom(firstKey.chatRoomId || "");
-                    }
+        try {
+            const selfKey = await axios.get(
+                `https://prod-api.kosetto.com/self-chat/${account.address}`,
+                {
+                    headers: {
+                        Authorization: account.token,
+                    },
                 }
-            })
-            .catch((err) => {
-                console.error("Error fetching holdings:", err);
-            });
+            );
+            const portfolio = await axios.get(
+                `https://prod-api.kosetto.com/portfolio/${account.address}`,
+                {
+                    headers: {
+                        Authorization: account.token,
+                    },
+                }
+            );
+            holdings = [
+                selfKey?.data?.holdings?.[0],
+                ...portfolio?.data?.holdings,
+            ];
+            setHoldings(holdings);
+            if (!selectedChatRoomRef.current?.length || forceSelection) {
+                // select my chatroom || first chatroom by default
+                const firstKey =
+                    holdings.find((n) => account.address === n.chatRoomId) ||
+                    holdings[0];
+                firstKey.lastRead = Date.now();
+                setSelectedChatRoom(firstKey.chatRoomId || "");
+            }
+        } catch (error) {
+            console.error("Error fetching holdings:", error);
+        }
     };
 
     const isOnline = (lastOnline) => {
