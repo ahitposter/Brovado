@@ -177,13 +177,25 @@ const Chat = ({
                 if (atTop && nextPageStart && nextPageStart !== lastPageStart) {
                     lastPageStart = nextPageStart;
                     setIsLoading(true);
-                    ws.send(
-                        JSON.stringify({
-                            action: "requestMessages",
-                            chatRoomId: selectedChatRoom,
-                            pageStart: nextPageStart,
-                        })
-                    );
+                    axios
+                        .get(
+                            `https://prod-api.kosetto.com/messages/${selectedChatRoom}?pageStart=${nextPageStart}`,
+                            {
+                                headers: {
+                                    Authorization: loggedInAccount.token,
+                                },
+                            }
+                        )
+                        .then((resp) => {
+                            handleMessagesRequest(resp.data);
+                        });
+                    // ws.send(
+                    //     JSON.stringify({
+                    //         action: "requestMessages",
+                    //         chatRoomId: selectedChatRoom,
+                    //         pageStart: nextPageStart,
+                    //     })
+                    // );
                 }
             };
 
@@ -213,12 +225,21 @@ const Chat = ({
         setIsLoading(true);
         setNextPageStart(null);
 
-        ws.send(
-            JSON.stringify({
-                action: "requestMessages",
-                chatRoomId: selectedChatRoom,
+        axios
+            .get(`https://prod-api.kosetto.com/messages/${selectedChatRoom}`, {
+                headers: {
+                    Authorization: loggedInAccount.token,
+                },
             })
-        );
+            .then((resp) => {
+                handleMessagesRequest(resp.data);
+            });
+        // ws.send(
+        //     JSON.stringify({
+        //         action: "requestMessages",
+        //         chatRoomId: selectedChatRoom,
+        //     })
+        // );
 
         updateLastRead(selectedChatRoom);
 
@@ -268,6 +289,23 @@ const Chat = ({
             }
         };
     }, [selectedChatRoom, isWsReady]);
+
+    const handleMessagesRequest = (data) => {
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            ...data.messages.slice(),
+        ]);
+        setNextPageStart(data.nextPageStart);
+        // only set isloading flase if there were no images to load
+        const newImages = data.messages.reduce(
+            (acc, message) =>
+                acc + (message.imageUrls ? message.imageUrls.length : 0),
+            0
+        );
+        if (newImages == 0) {
+            setIsLoading(false);
+        }
+    };
 
     const updateLastRead = (chatRoomId) => {
         let shallow = [...holdingsRef?.current];
