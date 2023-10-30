@@ -402,7 +402,7 @@ const Chat = ({
 
         const clientMessageId = uuidv4();
         const payload = {
-            action: "sendMessage",
+            // action: "sendMessage",
             text: message,
             imagePaths,
             chatRoomId: selectedChatRoom,
@@ -410,7 +410,21 @@ const Chat = ({
             clientMessageId,
         };
 
-        ws.send(JSON.stringify(payload));
+        axios
+            .post(
+                `https://prod-api.kosetto.com/messages/${selectedChatRoom}`,
+                payload,
+                {
+                    headers: {
+                        Authorization: loggedInAccount.token,
+                    },
+                }
+            )
+            .then((r) => {
+                setShowSpinner(false);
+            });
+
+        // ws.send(JSON.stringify(payload));
 
         setMessageContent((prevState) => ({
             ...prevState,
