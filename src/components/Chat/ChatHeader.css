@@ -1,0 +1,47 @@
+.chat-header {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    font-family: "San Francisco", Helvetica, Arial, sans-serif;
+}
+
+.header-top,
+.header-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-left,
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.twitter-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007aff;
+    text-decoration: none;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+.header-bottom {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.header-bottom span {
+    color: #333;
+}
