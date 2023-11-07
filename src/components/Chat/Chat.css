@@ -1,0 +1,456 @@
+@media (max-width: 999px) {
+    .messages {
+        padding: 8px; /* Reduced padding for mobile */
+    }
+
+    .message {
+        margin-bottom: 8px; /* Reduced margin for mobile */
+    }
+
+    .message-content {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 6px 12px; /* Reduced padding for mobile */
+    }
+
+    .message-pfp {
+        width: 30px; /* Smaller profile picture for mobile */
+        height: 30px;
+    }
+
+    .message-text {
+        font-size: 14px; /* Smaller font size for mobile */
+    }
+
+    .message-time {
+        font-size: 12px; /* Smaller font size for mobile */
+    }
+
+    .message-input {
+        min-height: 4rem; /* Reduced height for mobile */
+    }
+
+    .input-textarea {
+        font-size: 14px; /* Smaller font size for mobile */
+        padding: 6px 10px; /* Reduced padding for mobile */
+    }
+
+    .addImageButton,
+    .sendButton {
+        width: 80px; /* Smaller width for mobile */
+        height: 30px; /* Smaller height for mobile */
+    }
+
+    .image-card img {
+        max-width: 200px; /* Smaller max width for mobile */
+        max-height: 200px; /* Smaller max height for mobile */
+    }
+
+    .reply-card-input {
+        max-width: 50%; /* Reduced max width for mobile */
+    }
+
+    .image-preview-container {
+        padding: 4px; /* Reduced padding for mobile */
+    }
+
+    .image-preview {
+        width: 60px; /* Smaller width for mobile */
+        height: 60px; /* Smaller height for mobile */
+    }
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #f2f2f2; /* Light Gray Background */
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #8e8e93; /* Gray Text */
+}
+
+.messages {
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    flex: 4; /* Take up 80% of the space by default */
+}
+
+.message {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: flex-end;
+}
+
+.message.mine {
+    justify-content: flex-end;
+}
+
+.message-content {
+    max-width: 60%;
+    padding: 8px 16px;
+    position: relative;
+    border-radius: 20px;
+    background-color: #e5e5ea; /* Gray bubble */
+}
+
+.message.mine .message-content {
+    background-color: #007aff; /* Blue bubble */
+    color: #ffffff;
+}
+
+.message-pfp {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+.message-text {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.message .message-content .message-time {
+    color: #8e8e93; /* Gray Text for incoming messages */
+}
+
+.message.mine .message-content .message-time {
+    color: rgba(255, 255, 255, 0.7); /* Subtle white for outgoing messages */
+}
+
+.message-input.disabled {
+    border-radius: 16px;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    padding-bottom: 10px;
+    background-color: #ccc;
+}
+
+.input-textarea:disabled {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #ccc;
+}
+.addImageButton:disabled,
+.sendButton:disabled {
+    padding: 10px 20px;
+    background-color: #ccc;
+    color: #ccc;
+    border: none;
+    border-radius: 12px;
+}
+
+.message-input {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-height: 5rem;
+}
+
+.input-textarea {
+    flex: 1;
+    border-radius: 16px;
+    padding: 8px 12px;
+    border: 1px solid #e5e5e5; /* Light Gray Border */
+    font-size: 16px;
+    resize: none;
+    margin-right: 16px;
+    height: 90%;
+    font-family: inherit;
+}
+.input-textarea.dragging {
+    border: 2px solid blue;
+}
+.addImageButton,
+.sendButton {
+    width: 90px;
+    height: 36px;
+    background-color: #007aff; /* Blue background */
+    color: #ffffff;
+    border: none;
+    border-radius: 18px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.reply-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px;
+    background-color: #f2f2f2; /* Light Gray Background */
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.reply-card-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.reply-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.reply-name {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.reply-text {
+    font-size: 12px;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.message.mine .reply-card {
+    background-color: #005ab5; /* Slightly darker blue */
+}
+
+.message.mine .reply-name,
+.message.mine .reply-text {
+    color: #ffffff; /* White text */
+}
+
+.image-card {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.image-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    cursor: pointer; /* Makes it obvious that the image is clickable */
+}
+
+.close-icon-container {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    cursor: pointer;
+}
+
+.close-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.zoomed-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2; /* Higher than the chat area */
+}
+
+.zoomed-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.image-card .chat-image {
+    max-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+}
+.message-sender-reply {
+    display: flex;
+    justify-content: space-between;
+}
+.message-sender {
+    font-size: small;
+    font-weight: bold;
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin-bottom: 0.25rem;
+}
+.reply-arrow {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    /* padding-left: 1%; */
+    /* padding-bottom: 5%; */
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.input-area {
+    padding: 16px;
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #e5e5e5; /* Light Gray Border */
+}
+
+.replying-to {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e0e0e0; /* Slightly darker background */
+    padding: 8px 16px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* .cancel-reply-button {
+    background: none;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    color: #868686;
+} */
+
+.reply-card-input {
+    max-width: 60%;
+    width: fit-content;
+    display: flex;
+    align-items: flex-start;
+    padding: 8px;
+    background-color: #e5e5ea; /* Light Gray Background */
+    border-radius: 12px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: visible;
+}
+
+.reply-card-first-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.send-icon,
+.spinner {
+    width: 40px;
+    height: 40px;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+/* Send Icon */
+.send-icon {
+    background-color: #007aff; /* Blue background */
+    mask: url("/public/send.svg") no-repeat center;
+    mask-size: cover;
+}
+
+/* Spinner */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    border: 4px solid rgba(0, 122, 255, 0.3); /* Light blue */
+    border-radius: 50%;
+    border-top: 4px solid #007aff; /* Blue */
+    animation: spin 1s linear infinite;
+}
+
+.image-preview-container {
+    display: flex;
+    flex-wrap: nowrap;
+    /* margin-bottom: 8px; */
+    overflow: hidden; /* Hide the scrollbar */
+    align-items: center;
+    padding: 8px;
+    /* background-color: #e5e5ea; Light Gray Background */
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.image-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-right: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: visible; /* Hide the overflow to prevent scrollbars */
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Maintain aspect ratio */
+    border-radius: 12px;
+}
+
+.cancel-reply-button,
+.remove-image-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    position: absolute;
+    top: -8px; /* Adjust as needed */
+    right: -8px; /* Adjust as needed */
+    width: 16px;
+    height: 16px;
+    background-color: #fff; /* White background */
+    color: black;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    outline: none;
+    border: none;
+}
+.cancel-reply-button {
+    right: -5px;
+}
+
+.reply-and-image-container {
+    display: flex;
+    align-items: center;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}

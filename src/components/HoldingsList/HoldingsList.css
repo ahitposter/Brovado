@@ -1,0 +1,200 @@
+/* Apple-like Holdings List Stylesheet */
+
+.holdings-list {
+    padding: 1rem;
+    background-color: #f2f2f2;
+}
+
+.holdings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f2f2f2;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #007aff;
+}
+
+.search-bar {
+    display: flex;
+    width: 100%;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.search-bar button {
+    background-color: #007aff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.holding-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow, Apple style */
+}
+
+.holding-item.active {
+    background-color: #e5e5ea;
+}
+
+.pfp {
+    position: relative;
+    flex: 0 0 auto;
+    margin-right: 0.5rem;
+}
+
+.pfp.image {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+}
+
+.pfp.unread-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #11b3f6;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    /* font-size: 1rem; */
+    color: #333333;
+}
+
+.user-info.user-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.user-info.user-name {
+    flex: 0 1 auto;
+    font-weight: bold;
+    margin-right: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+.user-info.last-msg-time {
+    font-size: 0.8em;
+    flex: 0 1 auto;
+    /* margin-left: 0.1rem; */
+    vertical-align: super;
+    color: #8e8e93;
+}
+
+.user-info.last-message.unread {
+    font-weight: bold;
+}
+
+.user-info.last-message {
+    font-size: 0.9rem;
+    color: #666666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.key-info {
+    flex: 0 1 auto;
+    min-width: 0;
+    word-wrap: break-word;
+    text-align: right;
+    flex-wrap: wrap;
+}
+
+.key-info.price {
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    color: #333333;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.key-info.holdings {
+    word-wrap: break-word;
+    font-size: 0.8rem;
+    color: #999999;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+.favorite-icon {
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+}
+.search-input {
+    padding: 0.5rem;
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e5e5;
+    background-color: #ffffff;
+}
+
+.sort-options {
+    position: absolute;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    z-index: 100;
+    min-width: fit-content;
+    right: 16px; /* Align to the far right */
+}
+
+.sort-options div {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.sort-options div:hover {
+    background-color: #f2f2f2;
+}
+
+.sort-options .selected {
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
